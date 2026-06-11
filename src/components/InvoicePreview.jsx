@@ -9,9 +9,10 @@ export default function InvoicePreview({
                                            slogan,
                                            logoUrl,
                                            totals,
-                                       }) {
+}) {
     const isPaid = invoice.status === "paid";
     const hasDiscount = Number(totals.totalDiscount) > 0;
+    const currency = invoice.currency || "USD";
 
     function getItemName(item) {
         if (lang === "kh") {
@@ -29,10 +30,10 @@ export default function InvoicePreview({
         }
 
         if (item.discountType === "percent") {
-            return `${discountValue}% (${formatMoney(calculated.discount)})`;
+            return `${discountValue}% (${formatMoney(calculated.discount, currency)})`;
         }
 
-        return formatMoney(calculated.discount);
+        return formatMoney(calculated.discount, currency);
     }
 
     return (
@@ -68,7 +69,7 @@ export default function InvoicePreview({
 
                 <div>
                     <span>{t.currency}</span>
-                    <strong>USD</strong>
+                    <strong>{currency}</strong>
                 </div>
             </section>
 
@@ -112,11 +113,11 @@ export default function InvoicePreview({
                             </td>
 
                             <td>{item.qty || 0}</td>
-                            <td>{formatMoney(item.price)}</td>
+                            <td>{formatMoney(item.price, currency)}</td>
                             <td>{getDiscountText(item, calculated)}</td>
 
                             <td>
-                                <strong>{formatMoney(calculated.net)}</strong>
+                                <strong>{formatMoney(calculated.net, currency)}</strong>
                             </td>
                         </tr>
                     );
@@ -138,13 +139,13 @@ export default function InvoicePreview({
                 <div className="ccSummaryCard">
                     <div className="ccSummaryRow">
                         <span>{t.subtotal}</span>
-                        <strong>{formatMoney(totals.subtotal)}</strong>
+                        <strong>{formatMoney(totals.subtotal, currency)}</strong>
                     </div>
 
                     {hasDiscount && (
                         <div className="ccSummaryRow">
                             <span>{t.totalDiscount}</span>
-                            <strong>{formatMoney(totals.totalDiscount)}</strong>
+                            <strong>{formatMoney(totals.totalDiscount, currency)}</strong>
                         </div>
                     )}
 
@@ -153,7 +154,7 @@ export default function InvoicePreview({
                             <span>{t.grandTotal}</span>
                         </div>
 
-                        <strong>{formatMoney(totals.grandTotal)}</strong>
+                        <strong>{formatMoney(totals.grandTotal, currency)}</strong>
                     </div>
                 </div>
             </section>

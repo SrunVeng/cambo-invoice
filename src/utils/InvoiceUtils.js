@@ -25,15 +25,15 @@ export function generateInvoiceNumber() {
 export function cleanFileName(name) {
     return String(name || "invoice")
         .trim()
-        .replace(/[^\w\-]+/g, "-")
+        .replace(/[^\w-]+/g, "-")
         .replace(/-+/g, "-")
         .replace(/^-|-$/g, "");
 }
 
-export function formatMoney(amount) {
+export function formatMoney(amount, currency = "USD") {
     return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     }).format(toNumber(amount));
@@ -72,17 +72,24 @@ export function calculateInvoice(invoiceOrItems, discountTypeArg, discountArg) {
 
     const items = Array.isArray(invoice.items) ? invoice.items : [];
 
-    const subtotal = items.reduce((sum, item) => {
-        return sum + calculateItem(item).subtotal;
-    }, 0);
+    const lineTotals = items.reduce(
+        (totals, item) => {
+            const calculated = calculateItem(item);
 
-    const itemDiscounts = items.reduce((sum, item) => {
-        return sum + calculateItem(item).discount;
-    }, 0);
+            totals.subtotal += calculated.subtotal;
+            totals.itemDiscounts += calculated.discount;
+            totals.subtotalAfterItemDiscounts += calculated.net;
 
-    const subtotalAfterItemDiscounts = items.reduce((sum, item) => {
-        return sum + calculateItem(item).net;
-    }, 0);
+            return totals;
+        },
+        {
+            subtotal: 0,
+            itemDiscounts: 0,
+            subtotalAfterItemDiscounts: 0,
+        }
+    );
+
+    const { subtotal, itemDiscounts, subtotalAfterItemDiscounts } = lineTotals;
 
     const totalDiscountValue = toNumber(invoice.totalDiscount);
 

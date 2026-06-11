@@ -5,6 +5,8 @@ import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice.js
 import InvoicePreview from "./InvoicePreview";
 import PaidStampTool from "./PaidStampTool";
 
+const CURRENCY_OPTIONS = ["USD", "KHR"];
+
 export default function Dashboard({
                                       lang,
                                       setLang,
@@ -33,6 +35,7 @@ export default function Dashboard({
         lang === "kh"
             ? "ធីកតែពេលអតិថិជនបានបង់ប្រាក់រួច។"
             : "Only tick this after the customer has paid.";
+    const currency = invoice.currency || "USD";
 
     function updateInvoice(field, value) {
         setInvoice((prev) => ({
@@ -164,7 +167,7 @@ export default function Dashboard({
                     <div className="card">
                         <h2>{t.invoiceInfo}</h2>
 
-                        <div className="grid2">
+                        <div className="grid3">
                             <label>
                                 {t.invoiceNo}
                                 <input
@@ -180,6 +183,22 @@ export default function Dashboard({
                                     value={invoice.date}
                                     onChange={(e) => updateInvoice("date", e.target.value)}
                                 />
+                            </label>
+
+                            <label>
+                                {t.currency}
+                                <select
+                                    value={currency}
+                                    onChange={(e) =>
+                                        updateInvoice("currency", e.target.value)
+                                    }
+                                >
+                                    {CURRENCY_OPTIONS.map((option) => (
+                                        <option key={option} value={option}>
+                                            {option}
+                                        </option>
+                                    ))}
+                                </select>
                             </label>
                         </div>
                     </div>
@@ -336,7 +355,9 @@ export default function Dashboard({
 
                                             <div className="lineTotal">
                                                 <span>{t.total}</span>
-                                                <strong>{formatMoney(itemTotal.net)}</strong>
+                                                <strong>
+                                                    {formatMoney(itemTotal.net, currency)}
+                                                </strong>
                                             </div>
                                         </div>
                                     </div>
@@ -452,7 +473,7 @@ export default function Dashboard({
                 <section className="preview">
                     <div className="previewTop">
                         <h2>{t.preview}</h2>
-                        <strong>{formatMoney(totals.grandTotal)}</strong>
+                        <strong>{formatMoney(totals.grandTotal, currency)}</strong>
                     </div>
 
                     <InvoicePreview

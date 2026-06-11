@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { degrees, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 export default function PaidStampTool() {
     const [file, setFile] = useState(null);
@@ -24,6 +23,7 @@ export default function PaidStampTool() {
 
         if (!isPdf && !isImage) {
             setFile(null);
+            e.target.value = "";
             setMessage("Please upload PDF, PNG, or JPG only.");
             return;
         }
@@ -37,8 +37,10 @@ export default function PaidStampTool() {
 
         link.href = url;
         link.download = fileName;
+        document.body.appendChild(link);
         link.click();
 
+        link.remove();
         URL.revokeObjectURL(url);
     }
 
@@ -84,39 +86,56 @@ export default function PaidStampTool() {
     async function stampImage(selectedFile) {
         const imageUrl = URL.createObjectURL(selectedFile);
 
-        const image = await new Promise((resolve, reject) => {
-            const img = new Image();
+        try {
+            const image = await new Promise((resolve, reject) => {
+                const img = new Image();
 
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = imageUrl;
-        });
+                img.onload = () => resolve(img);
+                img.onerror = reject;
+                img.src = imageUrl;
+            });
 
-        const canvas = document.createElement("canvas");
-        canvas.width = image.naturalWidth;
-        canvas.height = image.naturalHeight;
+            const canvas = document.createElement("canvas");
+            canvas.width = image.naturalWidth;
+            canvas.height = image.naturalHeight;
 
-        const ctx = canvas.getContext("2d");
+            const ctx = canvas.getContext("2d");
 
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-        drawPaidStampOnCanvas(ctx, canvas.width, canvas.height);
+            if (!ctx) {
+                throw new Error("Canvas is not available in this browser.");
+            }
 
-        URL.revokeObjectURL(imageUrl);
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            drawPaidStampOnCanvas(ctx, canvas.width, canvas.height);
 
-        const isJpg =
-            selectedFile.type === "image/jpeg" || selectedFile.type === "image/jpg";
+            const isJpg =
+                selectedFile.type === "image/jpeg" ||
+                selectedFile.type === "image/jpg";
 
-        const outputType = isJpg ? "image/jpeg" : "image/png";
-        const extension = isJpg ? "jpg" : "png";
+            const outputType = isJpg ? "image/jpeg" : "image/png";
+            const extension = isJpg ? "jpg" : "png";
 
-        const blob = await new Promise((resolve) => {
-            canvas.toBlob(resolve, outputType, 0.95);
-        });
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob((result) => {
+                    if (result) {
+                        resolve(result);
+                        return;
+                    }
 
-        downloadBlob(blob, getPaidFileName(selectedFile.name, extension));
+                    reject(new Error("Could not create stamped image."));
+                }, outputType, 0.95);
+            });
+
+            downloadBlob(blob, getPaidFileName(selectedFile.name, extension));
+        } finally {
+            URL.revokeObjectURL(imageUrl);
+        }
     }
 
     async function stampPdf(selectedFile) {
+        const { degrees, PDFDocument, rgb, StandardFonts } = await import(
+            "pdf-lib"
+        );
         const bytes = await selectedFile.arrayBuffer();
         const pdfDoc = await PDFDocument.load(bytes);
         const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);

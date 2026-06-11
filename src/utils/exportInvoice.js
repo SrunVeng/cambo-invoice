@@ -1,5 +1,3 @@
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import { cleanFileName } from "./InvoiceUtils.js";
 
 async function waitForImages(element) {
@@ -28,6 +26,8 @@ async function createCanvas(element) {
 
     await waitForImages(element);
 
+    const { default: html2canvas } = await import("html2canvas");
+
     return html2canvas(element, {
         scale: 2,
         useCORS: true,
@@ -49,25 +49,34 @@ function downloadBlob(blob, filename) {
     URL.revokeObjectURL(url);
 }
 
-export async function exportAsImage(element, baseFileName, type = "png") {
-    const canvas = await createCanvas(element);
-    const mimeType =
-        type === "jpg" || type === "jpeg" ? "image/jpeg" : "image/png";
+function canvasToBlob(canvas, mimeType, quality) {
+    return new Promise((resolve, reject) => {
+        canvas.toBlob(
+            (blob) => {
+                if (blob) {
+                    resolve(blob);
+                    return;
+                }
 
-    const extension = mimeType === "image/jpeg" ? "jpg" : "png";
-
-    canvas.toBlob(
-        (blob) => {
-            if (!blob) return;
-            downloadBlob(blob, `${cleanFileName(baseFileName)}.${extension}`);
-        },
-        mimeType,
-        0.95
-    );
+                reject(new Error("Could not create image file."));
+            },
+            mimeType,
+            quality
+        );
+    });
 }
 
-export async function exportAsPDF(element, baseFileName) {
-    const canvas = await createCanvas(element);
+async function downloadCanvasAsImage(canvas, baseFileName, type = "png") {
+    const mimeType =
+        type === "jpg" || type === "jpeg" ? "image/jpeg" : "image/png";
+    const extension = mimeType === "image/jpeg" ? "jpg" : "png";
+    const blob = await canvasToBlob(canvas, mimeType, 0.95);
+
+    downloadBlob(blob, `${cleanFileName(baseFileName)}.${extension}`);
+}
+
+async function downloadCanvasAsPDF(canvas, baseFileName) {
+    const { jsPDF } = await import("jspdf");
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF("p", "mm", "a4");
@@ -95,8 +104,22 @@ export async function exportAsPDF(element, baseFileName) {
     pdf.save(`${cleanFileName(baseFileName)}.pdf`);
 }
 
+export async function exportAsImage(element, baseFileName, type = "png") {
+    const canvas = await createCanvas(element);
+
+    await downloadCanvasAsImage(canvas, baseFileName, type);
+}
+
+export async function exportAsPDF(element, baseFileName) {
+    const canvas = await createCanvas(element);
+
+    await downloadCanvasAsPDF(canvas, baseFileName);
+}
+
 export async function exportAll(element, baseFileName) {
-    await exportAsPDF(element, baseFileName);
-    await exportAsImage(element, baseFileName, "png");
-    await exportAsImage(element, baseFileName, "jpg");
+    const canvas = await createCanvas(element);
+
+    await downloadCanvasAsPDF(canvas, baseFileName);
+    await downloadCanvasAsImage(canvas, baseFileName, "png");
+    await downloadCanvasAsImage(canvas, baseFileName, "jpg");
 }
