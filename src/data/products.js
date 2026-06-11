@@ -1,0 +1,65 @@
+export const products = [
+    {
+        id: "hot-coffee",
+        nameEn: "Hot Coffee",
+        nameKh: "កាហ្វេក្តៅ",
+        unit: "cup",
+        price: 1.5,
+    },
+    {
+        id: "iced-coffee",
+        nameEn: "Iced Coffee",
+        nameKh: "កាហ្វេទឹកកក",
+        unit: "cup",
+        price: 1.75,
+    },
+    {
+        id: "latte",
+        nameEn: "Latte",
+        nameKh: "ឡាតេ",
+        unit: "cup",
+        price: 2.25,
+    },
+    {
+        id: "cappuccino",
+        nameEn: "Cappuccino",
+        nameKh: "កាប៉ូស៊ីណូ",
+        unit: "cup",
+        price: 2.25,
+    },
+    {
+        id: "americano",
+        nameEn: "Americano",
+        nameKh: "អាមេរិកាណូ",
+        unit: "cup",
+        price: 2,
+    },
+    {
+        id: "coffee-bean-250g",
+        nameEn: "Coffee Bean 250g",
+        nameKh: "គ្រាប់កាហ្វេ ២៥០ក្រាម",
+        unit: "bag",
+        price: 6.5,
+    },
+    {
+        id: "coffee-bean-500g",
+        nameEn: "Coffee Bean 500g",
+        nameKh: "គ្រាប់កាហ្វេ ៥០០ក្រាម",
+        unit: "bag",
+        price: 12,
+    },
+    {
+        id: "coffee-powder-250g",
+        nameEn: "Coffee Powder 250g",
+        nameKh: "ម្សៅកាហ្វេ ២៥០ក្រាម",
+        unit: "bag",
+        price: 5.5,
+    },
+    {
+        id: "coffee-powder-500g",
+        nameEn: "Coffee Powder 500g",
+        nameKh: "ម្សៅកាហ្វេ ៥០០ក្រាម",
+        unit: "bag",
+        price: 10,
+    }
+];
