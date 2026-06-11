@@ -15,8 +15,8 @@ const ADMIN = {
 };
 
 const slogan = {
-  en: "By Cambodians, to Cambodians and the world",
-  kh: "ដោយប្រជាជនកម្ពុជា សម្រាប់ប្រជាជនកម្ពុជា និងពិភពលោក",
+  en: "By Cambodians, to Cambodians",
+  kh: "ដោយប្រជាជនកម្ពុជា សម្រាប់ប្រជាជនកម្ពុជា",
 };
 
 const text = {
