@@ -22,6 +22,8 @@ export default function InvoicePreview({
 
     return (
         <article className="invoicePaper professionalInvoice" ref={invoiceRef}>
+            {isPaid && <div className="paidStampMark">PAID</div>}
+
             <header className="proInvoiceHeader">
                 <div className="proBrand">
                     <img src={logoUrl} alt="Cambodia Coffee" />
@@ -35,14 +37,10 @@ export default function InvoicePreview({
 
                 <div className="proInvoiceTitle">
                     <h2>{t.invoice}</h2>
-
-                    <span className={isPaid ? "proStatus paidStatus" : "proStatus unpaidStatus"}>
-            {isPaid ? t.paidStatus : t.unpaidStatus}
-          </span>
                 </div>
             </header>
 
-            <section className="proInfoBar">
+            <section className="proInfoBar proInfoBarThree">
                 <div>
                     <span>{t.invoiceNo}</span>
                     <strong>{invoice.invoiceNo}</strong>
@@ -56,11 +54,6 @@ export default function InvoicePreview({
                 <div>
                     <span>{t.currency}</span>
                     <strong>{invoice.currency}</strong>
-                </div>
-
-                <div>
-                    <span>{t.paymentStatus}</span>
-                    <strong>{isPaid ? t.paidStatus : t.unpaidStatus}</strong>
                 </div>
             </section>
 

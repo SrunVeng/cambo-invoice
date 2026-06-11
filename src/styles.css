@@ -715,3 +715,115 @@ textarea {
     max-width: none;
   }
 }
+
+
+.professionalInvoice {
+  position: relative;
+  overflow: hidden;
+}
+
+.paidStampMark {
+  position: absolute;
+  top: 235px;
+  right: 70px;
+  z-index: 5;
+  transform: rotate(-16deg);
+  padding: 16px 34px;
+  border: 7px double rgba(159, 29, 29, 0.82);
+  border-radius: 18px;
+  color: rgba(159, 29, 29, 0.82);
+  font-size: 54px;
+  font-weight: 950;
+  letter-spacing: 5px;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.proInfoBarThree {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.checkboxLine {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.checkboxLine input {
+  width: 20px;
+  height: 20px;
+  margin: 3px 0 0;
+  accent-color: #4a2a20;
+  box-shadow: none;
+}
+
+.checkboxLine span {
+  display: grid;
+  gap: 4px;
+}
+
+.checkboxLine strong {
+  font-size: 14px;
+  color: #241814;
+}
+
+.checkboxLine small {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #806b5f;
+}
+
+.singleDownloadBar {
+  grid-template-columns: 1fr 1.2fr;
+}
+
+.singleDownloadBar select {
+  margin-top: 0;
+  border-radius: 12px;
+}
+
+.paidStampTool p {
+  margin: -4px 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #806b5f;
+}
+
+.stampButton {
+  margin-top: 12px;
+}
+
+.stampButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.stampMessage {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fffaf6;
+  border: 1px solid #eadfd7;
+  font-size: 13px;
+  color: #5a463d;
+}
+
+@media (max-width: 700px) {
+  .paidStampMark {
+    top: 210px;
+    right: 34px;
+    font-size: 38px;
+    padding: 12px 24px;
+  }
+
+  .proInfoBarThree {
+    grid-template-columns: 1fr;
+  }
+
+  .singleDownloadBar {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { products } from "../data/products";
 import { calculateItem, formatMoney } from "../utils/invoiceUtils";
 import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice";
 import InvoicePreview from "./InvoicePreview";
+import PaidStampTool from "./PaidStampTool";
 
 export default function Dashboard({
                                       lang,
@@ -22,6 +23,14 @@ export default function Dashboard({
                                       blankItem,
                                   }) {
     const invoiceRef = useRef(null);
+    const [downloadType, setDownloadType] = useState("pdf");
+
+    const downloadLabel = lang === "kh" ? "ទាញយក" : "Download";
+    const paidStampLabel = lang === "kh" ? "បោះត្រា PAID លើវិក្កយបត្រ" : "Add PAID stamp on invoice";
+    const paidStampHelp =
+        lang === "kh"
+            ? "ធីកតែពេលអតិថិជនបានបង់ប្រាក់រួច។"
+            : "Only tick this after the customer has paid.";
 
     function updateInvoice(field, value) {
         setInvoice((prev) => ({
@@ -169,17 +178,6 @@ export default function Dashboard({
                                     value={invoice.date}
                                     onChange={(e) => updateInvoice("date", e.target.value)}
                                 />
-                            </label>
-
-                            <label>
-                                {t.status}
-                                <select
-                                    value={invoice.status}
-                                    onChange={(e) => updateInvoice("status", e.target.value)}
-                                >
-                                    <option value="unpaid">{t.unpaid}</option>
-                                    <option value="paid">{t.paid}</option>
-                                </select>
                             </label>
 
                             <label>
@@ -415,37 +413,44 @@ export default function Dashboard({
                         />
                     </div>
 
-                    <div className="downloadBar">
-                        <button
-                            type="button"
-                            disabled={isExporting}
-                            onClick={() => downloadInvoice("pdf")}
+                    <div className="card">
+                        <h2>Payment Stamp</h2>
+
+                        <label className="checkboxLine">
+                            <input
+                                type="checkbox"
+                                checked={invoice.status === "paid"}
+                                onChange={(e) =>
+                                    updateInvoice("status", e.target.checked ? "paid" : "unpaid")
+                                }
+                            />
+
+                            <span>
+                <strong>{paidStampLabel}</strong>
+                <small>{paidStampHelp}</small>
+              </span>
+                        </label>
+                    </div>
+
+                    <PaidStampTool />
+
+                    <div className="downloadBar singleDownloadBar">
+                        <select
+                            value={downloadType}
+                            onChange={(e) => setDownloadType(e.target.value)}
                         >
-                            {t.exportPdf}
-                        </button>
+                            <option value="pdf">PDF</option>
+                            <option value="png">PNG</option>
+                            <option value="jpg">JPG</option>
+                            <option value="all">{t.exportAll}</option>
+                        </select>
 
                         <button
                             type="button"
                             disabled={isExporting}
-                            onClick={() => downloadInvoice("png")}
+                            onClick={() => downloadInvoice(downloadType)}
                         >
-                            {t.exportPng}
-                        </button>
-
-                        <button
-                            type="button"
-                            disabled={isExporting}
-                            onClick={() => downloadInvoice("jpg")}
-                        >
-                            {t.exportJpg}
-                        </button>
-
-                        <button
-                            type="button"
-                            disabled={isExporting}
-                            onClick={() => downloadInvoice("all")}
-                        >
-                            {isExporting ? t.exporting : t.exportAll}
+                            {isExporting ? t.exporting : downloadLabel}
                         </button>
                     </div>
                 </aside>
