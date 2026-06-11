@@ -6,13 +6,15 @@ import {
   getToday,
   newUid,
 } from "./utils/InvoiceUtils.js";
+import {
+  hasAdminPassword,
+  isLoggedIn,
+  setLoggedIn as setStoredLoggedIn,
+  setupAdminPassword,
+  verifyAdminPassword,
+} from "./utils/auth.js";
 
 const LOGO_URL = "/cambodia-coffee-logo.png";
-
-const ADMIN = {
-  username: "admin",
-  password: "coffee123",
-};
 
 const slogan = {
   en: "By Cambodians, to Cambodians",
@@ -24,8 +26,14 @@ const text = {
     login: "Admin Login",
     username: "Username",
     password: "Password",
+    confirmPassword: "Confirm Password",
+    setupPassword: "Set Admin Password",
+    savePassword: "Save Password",
     signIn: "Sign In",
-    wrongLogin: "Wrong username or password",
+    wrongLogin: "Wrong password",
+    passwordRequired: "Password must be at least 8 characters",
+    passwordMismatch: "Passwords do not match",
+    authError: "Could not save password. Please try again.",
     invoiceApp: "Digital Invoice",
     logout: "Logout",
     newInvoice: "New Invoice",
@@ -84,8 +92,14 @@ const text = {
     login: "ចូលប្រើសម្រាប់អ្នកគ្រប់គ្រង",
     username: "ឈ្មោះអ្នកប្រើ",
     password: "ពាក្យសម្ងាត់",
+    confirmPassword: "បញ្ជាក់ពាក្យសម្ងាត់",
+    setupPassword: "កំណត់ពាក្យសម្ងាត់អ្នកគ្រប់គ្រង",
+    savePassword: "រក្សាទុកពាក្យសម្ងាត់",
     signIn: "ចូលប្រើ",
-    wrongLogin: "ឈ្មោះអ្នកប្រើ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ",
+    wrongLogin: "ពាក្យសម្ងាត់មិនត្រឹមត្រូវ",
+    passwordRequired: "ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច 8 តួអក្សរ",
+    passwordMismatch: "ពាក្យសម្ងាត់មិនដូចគ្នា",
+    authError: "មិនអាចរក្សាទុកពាក្យសម្ងាត់បានទេ សូមព្យាយាមម្តងទៀត",
     invoiceApp: "វិក្កយបត្រឌីជីថល",
     logout: "ចេញ",
     newInvoice: "វិក្កយបត្រថ្មី",
@@ -177,13 +191,17 @@ export default function App() {
   const [qrImage, setQrImage] = useState("");
   const [isExporting, setIsExporting] = useState(false);
 
-  const [loggedIn, setLoggedIn] = useState(
-      localStorage.getItem("coffee_invoice_logged_in") === "yes"
-  );
+  const [passwordConfigured, setPasswordConfigured] = useState(hasAdminPassword);
+  const [loggedIn, setLoggedInState] = useState(isLoggedIn);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   const [loginForm, setLoginForm] = useState({
-    username: "",
     password: "",
+  });
+
+  const [setupForm, setSetupForm] = useState({
+    password: "",
+    confirmPassword: "",
   });
 
   const [loginError, setLoginError] = useState("");
@@ -194,30 +212,123 @@ export default function App() {
     return calculateInvoice(invoice);
   }, [invoice]);
 
-  function handleLogin(e) {
+  async function handleSetupPassword(e) {
     e.preventDefault();
+    setLoginError("");
 
-    if (
-        loginForm.username === ADMIN.username &&
-        loginForm.password === ADMIN.password
-    ) {
-      localStorage.setItem("coffee_invoice_logged_in", "yes");
-      setLoggedIn(true);
-      setLoginError("");
+    if (setupForm.password.length < 8) {
+      setLoginError(t.passwordRequired);
       return;
     }
 
-    setLoginError(t.wrongLogin);
+    if (setupForm.password !== setupForm.confirmPassword) {
+      setLoginError(t.passwordMismatch);
+      return;
+    }
+
+    try {
+      setIsAuthenticating(true);
+      await setupAdminPassword(setupForm.password);
+      setStoredLoggedIn(true);
+      setPasswordConfigured(true);
+      setLoggedInState(true);
+      setSetupForm({
+        password: "",
+        confirmPassword: "",
+      });
+    } catch {
+      setLoginError(t.authError);
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    setLoginError("");
+
+    try {
+      setIsAuthenticating(true);
+      const isPasswordValid = await verifyAdminPassword(loginForm.password);
+
+      if (isPasswordValid) {
+        setStoredLoggedIn(true);
+        setLoggedInState(true);
+        setLoginForm({
+          password: "",
+        });
+        return;
+      }
+
+      setStoredLoggedIn(false);
+      setLoggedInState(false);
+      setLoginError(t.wrongLogin);
+    } catch {
+      setLoginError(t.wrongLogin);
+    } finally {
+      setIsAuthenticating(false);
+    }
   }
 
   function logout() {
-    localStorage.removeItem("coffee_invoice_logged_in");
-    setLoggedIn(false);
+    setStoredLoggedIn(false);
+    setLoggedInState(false);
   }
 
   function newInvoice() {
     setInvoice(blankInvoice());
     setQrImage("");
+  }
+
+  if (!passwordConfigured) {
+    return (
+        <main className="loginPage">
+          <form className="loginCard" onSubmit={handleSetupPassword}>
+            <img src={LOGO_URL} alt="Cambodia Coffee" />
+
+            <h1>{t.setupPassword}</h1>
+            <p>Cambodia Coffee {t.invoiceApp}</p>
+
+            <label>
+              {t.password}
+              <input
+                  type="password"
+                  value={setupForm.password}
+                  minLength="8"
+                  autoComplete="new-password"
+                  onChange={(e) =>
+                      setSetupForm((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                  }
+              />
+            </label>
+
+            <label>
+              {t.confirmPassword}
+              <input
+                  type="password"
+                  value={setupForm.confirmPassword}
+                  minLength="8"
+                  autoComplete="new-password"
+                  onChange={(e) =>
+                      setSetupForm((prev) => ({
+                        ...prev,
+                        confirmPassword: e.target.value,
+                      }))
+                  }
+              />
+            </label>
+
+            {loginError && <div className="errorMessage">{loginError}</div>}
+
+            <button type="submit" className="primaryButton" disabled={isAuthenticating}>
+              {isAuthenticating ? t.exporting : t.savePassword}
+            </button>
+          </form>
+        </main>
+    );
   }
 
   if (!loggedIn) {
@@ -230,41 +341,25 @@ export default function App() {
             <p>Cambodia Coffee {t.invoiceApp}</p>
 
             <label>
-              {t.username}
-              <input
-                  value={loginForm.username}
-                  onChange={(e) =>
-                      setLoginForm((prev) => ({
-                        ...prev,
-                        username: e.target.value,
-                      }))
-                  }
-                  placeholder="admin"
-              />
-            </label>
-
-            <label>
               {t.password}
               <input
                   type="password"
                   value={loginForm.password}
+                  autoComplete="current-password"
                   onChange={(e) =>
                       setLoginForm((prev) => ({
                         ...prev,
                         password: e.target.value,
                       }))
                   }
-                  placeholder="coffee123"
               />
             </label>
 
             {loginError && <div className="errorMessage">{loginError}</div>}
 
-            <button type="submit" className="primaryButton">
-              {t.signIn}
+            <button type="submit" className="primaryButton" disabled={isAuthenticating}>
+              {isAuthenticating ? t.exporting : t.signIn}
             </button>
-
-            <small>Default: admin / coffee123</small>
           </form>
         </main>
     );

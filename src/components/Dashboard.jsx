@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { products } from "../data/products";
 import { calculateItem, formatMoney } from "../utils/InvoiceUtils.js";
 import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice.js";
+import { CustomSelect, DatePicker } from "./FormControls";
 import InvoicePreview from "./InvoicePreview";
 import PaidStampTool from "./PaidStampTool";
 
@@ -25,7 +26,8 @@ export default function Dashboard({
                                       blankItem,
                                   }) {
     const invoiceRef = useRef(null);
-    const [downloadType, setDownloadType] = useState("pdf");
+    const downloadMenuRef = useRef(null);
+    const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
 
     const downloadLabel = lang === "kh" ? "ទាញយក" : "Download";
     const paidStampLabel =
@@ -38,6 +40,47 @@ export default function Dashboard({
     const currency = SUPPORTED_CURRENCY;
     const isPaid = invoice.status === "paid";
     const statusText = invoice.status === "paid" ? t.paid : t.unpaid;
+    const discountOptions = [
+        { value: "percent", label: t.percent },
+        { value: "amount", label: t.amount },
+    ];
+    const totalDiscountOptions = [
+        { value: "amount", label: t.amount },
+        { value: "percent", label: t.percent },
+    ];
+    const downloadChoices = [
+        { value: "jpg", label: "JPG", hint: lang === "kh" ? "លំនាំដើម" : "Default" },
+        { value: "pdf", label: "PDF", hint: lang === "kh" ? "ទំព័រតែមួយ" : "Single page" },
+        { value: "png", label: "PNG", hint: lang === "kh" ? "គុណភាពខ្ពស់" : "High quality" },
+        { value: "all", label: t.exportAll, hint: "JPG + PDF + PNG" },
+    ];
+    const languageOptions = [
+        { value: "en", label: "English" },
+        { value: "kh", label: "ខ្មែរ" },
+    ];
+    const calendarLocale = lang === "kh" ? "km-KH" : "en-US";
+
+    useEffect(() => {
+        function closeDownloadMenu(event) {
+            if (!downloadMenuRef.current?.contains(event.target)) {
+                setIsDownloadMenuOpen(false);
+            }
+        }
+
+        function closeDownloadMenuOnEscape(event) {
+            if (event.key === "Escape") {
+                setIsDownloadMenuOpen(false);
+            }
+        }
+
+        document.addEventListener("pointerdown", closeDownloadMenu);
+        document.addEventListener("keydown", closeDownloadMenuOnEscape);
+
+        return () => {
+            document.removeEventListener("pointerdown", closeDownloadMenu);
+            document.removeEventListener("keydown", closeDownloadMenuOnEscape);
+        };
+    }, []);
 
     function updateInvoice(field, value) {
         setInvoice((prev) => ({
@@ -190,10 +233,11 @@ export default function Dashboard({
                 </div>
 
                 <div className="headerActions">
-                    <select value={lang} onChange={(e) => setLang(e.target.value)}>
-                        <option value="en">English</option>
-                        <option value="kh">ខ្មែរ</option>
-                    </select>
+                    <CustomSelect
+                        value={lang}
+                        options={languageOptions}
+                        onChange={setLang}
+                    />
 
                     <button type="button" onClick={newInvoice} className="outlineButton">
                         {t.newInvoice}
@@ -245,11 +289,11 @@ export default function Dashboard({
 
                             <label>
                                 {t.date}
-                                <input
-                                    type="date"
+                                <DatePicker
                                     value={invoice.date}
-                                    onChange={(e) =>
-                                        updateInvoiceWithUsd("date", e.target.value)
+                                    locale={calendarLocale}
+                                    onChange={(value) =>
+                                        updateInvoiceWithUsd("date", value)
                                     }
                                 />
                             </label>
@@ -322,22 +366,26 @@ export default function Dashboard({
 
                                         <label>
                                             {t.product}
-                                            <select
+                                            <CustomSelect
                                                 value={item.productId}
-                                                onChange={(e) =>
-                                                    selectProduct(item.uid, e.target.value)
+                                                onChange={(value) =>
+                                                    selectProduct(item.uid, value)
                                                 }
-                                            >
-                                                <option value="">{t.selectProduct}</option>
-
-                                                {products.map((product) => (
-                                                    <option key={product.id} value={product.id}>
-                                                        {lang === "kh"
-                                                            ? product.nameKh || product.nameEn
-                                                            : product.nameEn}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                options={[
+                                                    {
+                                                        value: "",
+                                                        label: t.selectProduct,
+                                                    },
+                                                    ...products.map((product) => ({
+                                                        value: product.id,
+                                                        label:
+                                                            lang === "kh"
+                                                                ? product.nameKh ||
+                                                                  product.nameEn
+                                                                : product.nameEn,
+                                                    })),
+                                                ]}
+                                            />
                                         </label>
 
                                         <label>
@@ -382,17 +430,15 @@ export default function Dashboard({
 
                                             <label>
                                                 {t.discountType}
-                                                <select
+                                                <CustomSelect
                                                     value={item.discountType}
-                                                    onChange={(e) =>
+                                                    onChange={(value) =>
                                                         updateItem(item.uid, {
-                                                            discountType: e.target.value,
+                                                            discountType: value,
                                                         })
                                                     }
-                                                >
-                                                    <option value="percent">{t.percent}</option>
-                                                    <option value="amount">{t.amount}</option>
-                                                </select>
+                                                    options={discountOptions}
+                                                />
                                             </label>
                                         </div>
 
@@ -429,15 +475,13 @@ export default function Dashboard({
                         <div className="grid2">
                             <label>
                                 {t.discountType}
-                                <select
+                                <CustomSelect
                                     value={invoice.totalDiscountType}
-                                    onChange={(e) =>
-                                        updateInvoice("totalDiscountType", e.target.value)
+                                    onChange={(value) =>
+                                        updateInvoice("totalDiscountType", value)
                                     }
-                                >
-                                    <option value="amount">{t.amount}</option>
-                                    <option value="percent">{t.percent}</option>
-                                </select>
+                                    options={totalDiscountOptions}
+                                />
                             </label>
 
                             <label>
@@ -512,24 +556,40 @@ export default function Dashboard({
                         <PaidStampTool />
                     </details>
 
-                    <div className="downloadBar singleDownloadBar">
-                        <select
-                            value={downloadType}
-                            onChange={(e) => setDownloadType(e.target.value)}
-                        >
-                            <option value="pdf">PDF</option>
-                            <option value="png">PNG</option>
-                            <option value="jpg">JPG</option>
-                            <option value="all">{t.exportAll}</option>
-                        </select>
-
+                    <div className="downloadBar downloadMenuBar" ref={downloadMenuRef}>
                         <button
                             type="button"
                             disabled={isExporting}
-                            onClick={() => downloadInvoice(downloadType)}
+                            onClick={() =>
+                                setIsDownloadMenuOpen((current) => !current)
+                            }
                         >
                             {isExporting ? t.exporting : downloadLabel}
                         </button>
+
+                        {isDownloadMenuOpen && (
+                            <div className="downloadChoicePanel">
+                                {downloadChoices.map((choice) => (
+                                    <button
+                                        type="button"
+                                        key={choice.value}
+                                        className={
+                                            choice.value === "jpg"
+                                                ? "downloadChoice recommended"
+                                                : "downloadChoice"
+                                        }
+                                        disabled={isExporting}
+                                        onClick={async () => {
+                                            setIsDownloadMenuOpen(false);
+                                            await downloadInvoice(choice.value);
+                                        }}
+                                    >
+                                        <span>{choice.label}</span>
+                                        <small>{choice.hint}</small>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </aside>
 
