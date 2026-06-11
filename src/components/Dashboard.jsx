@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { products } from "../data/products";
 import { calculateItem, formatMoney } from "../utils/InvoiceUtils.js";
-import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice";
+import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice.js";
 import InvoicePreview from "./InvoicePreview";
 import PaidStampTool from "./PaidStampTool";
 

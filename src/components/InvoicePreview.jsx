@@ -1,4 +1,4 @@
-import { calculateItem, formatMoney } from "../utils/invoiceUtils";
+import { calculateItem, formatMoney } from "../utils/InvoiceUtils.js";
 
 export default function InvoicePreview({
                                            invoiceRef,
