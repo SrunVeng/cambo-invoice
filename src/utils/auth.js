@@ -1,7 +1,10 @@
-const AUTH_CONFIG_KEY = "coffee_invoice_admin_auth";
 const LOGIN_STATE_KEY = "coffee_invoice_logged_in";
 const PASSWORD_ITERATIONS = 210000;
 const PASSWORD_KEY_LENGTH = 256;
+const ADMIN_PASSWORD_CONFIG = {
+    salt: "CO135/cefWHkEtk2H5gQpQ==",
+    passwordHash: "PHePc0spOmEd1GSyfZXWKwtlwa9/nVBVhujpWEVG12U=",
+};
 
 function toBase64(bytes) {
     let binary = "";
@@ -15,13 +18,6 @@ function toBase64(bytes) {
 
 function fromBase64(value) {
     return Uint8Array.from(atob(value), (character) => character.charCodeAt(0));
-}
-
-function createSalt() {
-    const salt = new Uint8Array(16);
-    crypto.getRandomValues(salt);
-
-    return toBase64(salt);
 }
 
 async function derivePasswordHash(password, salt) {
@@ -60,20 +56,8 @@ function safeEqual(left, right) {
     return difference === 0;
 }
 
-function readAuthConfig() {
-    try {
-        const value = localStorage.getItem(AUTH_CONFIG_KEY);
-
-        return value ? JSON.parse(value) : null;
-    } catch {
-        return null;
-    }
-}
-
 export function hasAdminPassword() {
-    const config = readAuthConfig();
-
-    return Boolean(config?.salt && config?.passwordHash);
+    return true;
 }
 
 export function isLoggedIn() {
@@ -89,28 +73,8 @@ export function setLoggedIn(value) {
     localStorage.removeItem(LOGIN_STATE_KEY);
 }
 
-export async function setupAdminPassword(password) {
-    const salt = createSalt();
-    const passwordHash = await derivePasswordHash(password, salt);
-
-    localStorage.setItem(
-        AUTH_CONFIG_KEY,
-        JSON.stringify({
-            salt,
-            passwordHash,
-            iterations: PASSWORD_ITERATIONS,
-        })
-    );
-}
-
 export async function verifyAdminPassword(password) {
-    const config = readAuthConfig();
+    const passwordHash = await derivePasswordHash(password, ADMIN_PASSWORD_CONFIG.salt);
 
-    if (!config?.salt || !config?.passwordHash) {
-        return false;
-    }
-
-    const passwordHash = await derivePasswordHash(password, config.salt);
-
-    return safeEqual(passwordHash, config.passwordHash);
+    return safeEqual(passwordHash, ADMIN_PASSWORD_CONFIG.passwordHash);
 }
