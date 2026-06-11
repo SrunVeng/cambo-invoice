@@ -5,7 +5,7 @@ import {
   generateInvoiceNumber,
   getToday,
   newUid,
-} from "./utils/invoiceUtils";
+} from "./utils/InvoiceUtils.js";
 
 const LOGO_URL = "/cambodia-coffee-logo.png";
 
