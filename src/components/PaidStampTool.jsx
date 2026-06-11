@@ -1,6 +1,8 @@
 import { useState } from "react";
 
-export default function PaidStampTool() {
+export default function PaidStampTool({
+    helpText = "Upload a PDF, PNG, or JPG invoice and download a copy marked PAID.",
+}) {
     const [file, setFile] = useState(null);
     const [isStamping, setIsStamping] = useState(false);
     const [message, setMessage] = useState("");
@@ -194,10 +196,7 @@ export default function PaidStampTool() {
 
     return (
         <div className="paidStampTool">
-            <p>
-                Upload an old invoice PDF, PNG, or JPG, then download a new copy with a
-                PAID stamp.
-            </p>
+            <p>{helpText}</p>
 
             <label className="uploadBox">
                 <input

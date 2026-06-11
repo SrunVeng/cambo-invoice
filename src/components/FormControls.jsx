@@ -85,7 +85,9 @@ export function CustomSelect({ options, value, onChange }) {
                             }
                             role="option"
                             aria-selected={option.value === value}
-                            onClick={() => {
+                            onClick={(event) => {
+                                event.preventDefault();
+                                event.stopPropagation();
                                 onChange(option.value);
                                 setIsOpen(false);
                             }}

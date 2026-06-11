@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { products } from "../data/products";
 import { calculateItem, formatMoney } from "../utils/InvoiceUtils.js";
 import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice.js";
@@ -26,17 +26,23 @@ export default function Dashboard({
                                       blankItem,
                                   }) {
     const invoiceRef = useRef(null);
+    const previewSectionRef = useRef(null);
+    const qrInputRef = useRef(null);
     const downloadMenuRef = useRef(null);
     const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
+    const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
+    const currentPreviewToken = useMemo(
+        () => JSON.stringify({ invoice, qrImage, lang }),
+        [invoice, qrImage, lang]
+    );
+    const [previewedToken, setPreviewedToken] = useState("");
+    const hasPreviewedCurrentInvoice = previewedToken === currentPreviewToken;
 
-    const downloadLabel = lang === "kh" ? "ទាញយក" : "Download";
-    const paidStampLabel =
-        lang === "kh" ? "បោះត្រា PAID លើវិក្កយបត្រ" : "Add PAID stamp on invoice";
-
-    const paidStampHelp =
-        lang === "kh"
-            ? "ធីកតែពេលអតិថិជនបានបង់ប្រាក់រួច។"
-            : "Only tick this after the customer has paid.";
+    const downloadLabel = hasPreviewedCurrentInvoice
+        ? lang === "kh"
+            ? "ទាញយក"
+            : "Download"
+        : t.previewFirst;
     const currency = SUPPORTED_CURRENCY;
     const isPaid = invoice.status === "paid";
     const statusText = invoice.status === "paid" ? t.paid : t.unpaid;
@@ -81,6 +87,22 @@ export default function Dashboard({
             document.removeEventListener("keydown", closeDownloadMenuOnEscape);
         };
     }, []);
+
+    useEffect(() => {
+        if (!isMobilePreviewOpen) return undefined;
+
+        function closePreviewOnEscape(event) {
+            if (event.key === "Escape") {
+                setIsMobilePreviewOpen(false);
+            }
+        }
+
+        document.addEventListener("keydown", closePreviewOnEscape);
+
+        return () => {
+            document.removeEventListener("keydown", closePreviewOnEscape);
+        };
+    }, [isMobilePreviewOpen]);
 
     function updateInvoice(field, value) {
         setInvoice((prev) => ({
@@ -180,6 +202,21 @@ export default function Dashboard({
         }
     }
 
+    function previewInvoice() {
+        setPreviewedToken(currentPreviewToken);
+        const isMobile = window.matchMedia("(max-width: 700px)").matches;
+
+        if (isMobile) {
+            setIsMobilePreviewOpen(true);
+            return;
+        }
+
+        previewSectionRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }
+
     async function downloadInvoice(type) {
         try {
             if (!invoiceRef.current) {
@@ -227,7 +264,7 @@ export default function Dashboard({
                     <img src={logoUrl} alt="Cambodia Coffee" />
 
                     <div>
-                        <h1>Cambodia Coffee</h1>
+                        <h1>Cambodia Coffee Digital Invoice</h1>
                         <p>{slogan[lang]}</p>
                     </div>
                 </div>
@@ -502,7 +539,7 @@ export default function Dashboard({
                     <div className="card paymentCard">
                         <h2>{t.payment}</h2>
 
-                        <label className="checkboxLine">
+                        <label className={isPaid ? "paymentToggle active" : "paymentToggle"}>
                             <input
                                 type="checkbox"
                                 checked={isPaid}
@@ -513,22 +550,32 @@ export default function Dashboard({
                                 }
                             />
 
+                            <span className="paymentTick" aria-hidden="true">✓</span>
+
                             <span>
-                                <strong>{paidStampLabel}</strong>
-                                <small>{paidStampHelp}</small>
+                                <strong>{t.customerPaid}</strong>
+                                <small>{t.customerPaidHelp}</small>
                             </span>
                         </label>
 
                         {!isPaid && (
                             <>
-                                <label className="uploadBox">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={uploadQr}
-                                    />
-                                    {t.uploadQr}
-                                </label>
+                                <input
+                                    ref={qrInputRef}
+                                    className="visuallyHiddenFile"
+                                    type="file"
+                                    accept="image/png,image/jpeg,image/webp,image/*"
+                                    onChange={uploadQr}
+                                />
+
+                                <button
+                                    type="button"
+                                    className={qrImage ? "qrUploadButton hasFile" : "qrUploadButton"}
+                                    onClick={() => qrInputRef.current?.click()}
+                                >
+                                    <span>{qrImage ? t.qrReady : t.uploadQr}</span>
+                                    <small>{qrImage ? t.replaceQr : t.qrImageTypes}</small>
+                                </button>
 
                                 {qrImage && (
                                     <button
@@ -553,21 +600,37 @@ export default function Dashboard({
 
                     <details className="advancedPanel">
                         <summary>{t.stampExisting}</summary>
-                        <PaidStampTool />
+                        <PaidStampTool helpText={t.updatePaidInvoiceHelp} />
                     </details>
 
                     <div className="downloadBar downloadMenuBar" ref={downloadMenuRef}>
                         <button
                             type="button"
+                            className="previewActionButton reviewActionButton"
+                            onClick={previewInvoice}
+                        >
+                            <span className="desktopOnlyLabel">{t.previewInvoice}</span>
+                            <span className="mobileOnlyLabel">{t.reviewInvoice}</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            className="dashboardDownloadButton"
                             disabled={isExporting}
-                            onClick={() =>
-                                setIsDownloadMenuOpen((current) => !current)
-                            }
+                            onClick={() => {
+                                if (!hasPreviewedCurrentInvoice) {
+                                    setIsDownloadMenuOpen(false);
+                                    previewInvoice();
+                                    return;
+                                }
+
+                                setIsDownloadMenuOpen((current) => !current);
+                            }}
                         >
                             {isExporting ? t.exporting : downloadLabel}
                         </button>
 
-                        {isDownloadMenuOpen && (
+                        {isDownloadMenuOpen && hasPreviewedCurrentInvoice && (
                             <div className="downloadChoicePanel">
                                 {downloadChoices.map((choice) => (
                                     <button
@@ -593,10 +656,60 @@ export default function Dashboard({
                     </div>
                 </aside>
 
-                <section className="preview">
+                <section
+                    className={isMobilePreviewOpen ? "preview mobilePreviewOpen" : "preview"}
+                    ref={previewSectionRef}
+                >
                     <div className="previewTop">
                         <h2>{t.preview}</h2>
                         <strong>{formatMoney(totals.grandTotal, currency)}</strong>
+                    </div>
+
+                    <div className="previewDownloadBar">
+                        <button
+                            type="button"
+                            className="previewActionButton"
+                            onClick={() => {
+                                setIsDownloadMenuOpen(false);
+                                setIsMobilePreviewOpen(false);
+                            }}
+                        >
+                            {t.editInvoice}
+                        </button>
+
+                        <button
+                            type="button"
+                            disabled={isExporting}
+                            onClick={() =>
+                                setIsDownloadMenuOpen((current) => !current)
+                            }
+                        >
+                            {isExporting ? t.exporting : lang === "kh" ? "ទាញយក" : "Download"}
+                        </button>
+
+                        {isDownloadMenuOpen && isMobilePreviewOpen && hasPreviewedCurrentInvoice && (
+                            <div className="downloadChoicePanel previewDownloadChoicePanel">
+                                {downloadChoices.map((choice) => (
+                                    <button
+                                        type="button"
+                                        key={choice.value}
+                                        className={
+                                            choice.value === "jpg"
+                                                ? "downloadChoice recommended"
+                                                : "downloadChoice"
+                                        }
+                                        disabled={isExporting}
+                                        onClick={async () => {
+                                            setIsDownloadMenuOpen(false);
+                                            await downloadInvoice(choice.value);
+                                        }}
+                                    >
+                                        <span>{choice.label}</span>
+                                        <small>{choice.hint}</small>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="previewPaperWrap">

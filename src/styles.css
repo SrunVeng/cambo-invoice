@@ -539,6 +539,10 @@ textarea {
   color: var(--accent-dark);
 }
 
+.previewCloseButton {
+  display: none;
+}
+
 /* EDITOR */
 
 .card {
@@ -666,7 +670,18 @@ textarea {
 }
 
 .downloadMenuBar {
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
+}
+
+.downloadBar .previewActionButton {
+  color: var(--accent-dark);
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+
+.mobileOnlyLabel,
+.previewDownloadBar {
+  display: none;
 }
 
 .downloadChoicePanel {
@@ -685,7 +700,8 @@ textarea {
   animation: controlPanelIn 140ms ease-out;
 }
 
-.downloadBar .downloadChoice {
+.downloadBar .downloadChoice,
+.previewDownloadBar .downloadChoice {
   min-height: 54px;
   padding: 10px 12px;
   display: flex;
@@ -700,7 +716,9 @@ textarea {
 }
 
 .downloadBar .downloadChoice:hover,
-.downloadBar .downloadChoice.recommended {
+.downloadBar .downloadChoice.recommended,
+.previewDownloadBar .downloadChoice:hover,
+.previewDownloadBar .downloadChoice.recommended {
   border-color: #bfd1c8;
   background: #edf5f1;
 }
@@ -738,6 +756,49 @@ textarea {
 .paymentCard .outlineButton.full,
 .paymentCard .noteInput {
   margin-top: 0;
+}
+
+.visuallyHiddenFile {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.qrUploadButton {
+  width: 100%;
+  min-height: 76px;
+  padding: 14px 16px;
+  border: 1px dashed #9eb4aa;
+  border-radius: 14px;
+  background: #f4faf6;
+  color: var(--accent-dark);
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  text-align: center;
+  font-weight: 900;
+}
+
+.qrUploadButton:hover,
+.qrUploadButton.hasFile {
+  border-color: var(--accent);
+  background: #edf7f1;
+}
+
+.qrUploadButton span {
+  font-size: 15px;
+}
+
+.qrUploadButton small {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 800;
 }
 
 /* INVOICE PAPER */
@@ -1212,7 +1273,8 @@ textarea {
 
 /* CHECKBOX + STAMP TOOL */
 
-.checkboxLine {
+.checkboxLine,
+.paymentToggle {
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -1220,7 +1282,8 @@ textarea {
   cursor: pointer;
 }
 
-.checkboxLine input {
+.checkboxLine input,
+.paymentToggle input {
   width: 20px;
   height: 20px;
   margin: 3px 0 0;
@@ -1228,20 +1291,70 @@ textarea {
   box-shadow: none;
 }
 
-.checkboxLine span {
+.checkboxLine span,
+.paymentToggle > span:last-child {
   display: grid;
   gap: 4px;
 }
 
-.checkboxLine strong {
+.checkboxLine strong,
+.paymentToggle strong {
   font-size: 14px;
   color: var(--ink);
 }
 
-.checkboxLine small {
+.checkboxLine small,
+.paymentToggle small {
   font-size: 12px;
   line-height: 1.5;
   color: var(--muted);
+}
+
+.paymentToggle {
+  min-height: 78px;
+  padding: 14px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fbfaf7;
+  transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+.paymentToggle:hover,
+.paymentToggle.active {
+  border-color: #97b5a8;
+  background: #f0f8f3;
+}
+
+.paymentToggle.active {
+  box-shadow: 0 0 0 4px rgba(47, 93, 80, 0.1);
+}
+
+.paymentToggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.paymentTick {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  border: 2px solid #b9c6bf;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: transparent;
+  background: #ffffff;
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.paymentToggle.active .paymentTick {
+  border-color: var(--accent);
+  color: #ffffff;
+  background: var(--accent);
 }
 
 .paidStampTool p {
@@ -1483,6 +1596,15 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .dashboardDownloadButton,
+  .desktopOnlyLabel {
+    display: none;
+  }
+
+  .mobileOnlyLabel {
+    display: inline;
+  }
+
   .customSelectPanel,
   .datePickerPanel {
     min-width: 0;
@@ -1494,6 +1616,16 @@ textarea {
 
   .preview {
     overflow: hidden;
+  }
+
+  .preview.mobilePreviewOpen {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: block;
+    padding: 10px 10px calc(18px + env(safe-area-inset-bottom));
+    overflow: auto;
+    background: var(--page);
   }
 
   .previewPaperWrap {
@@ -1508,9 +1640,61 @@ textarea {
   }
 
   .previewTop {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     margin-bottom: 10px;
     padding: 14px 16px;
     border-radius: 14px;
+  }
+
+  .preview.mobilePreviewOpen .previewTop {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 12px;
+    align-items: center;
+  }
+
+  .preview.mobilePreviewOpen .previewTop strong {
+    justify-self: end;
+  }
+
+  .previewDownloadBar {
+    display: none;
+  }
+
+  .preview.mobilePreviewOpen .previewDownloadBar {
+    position: sticky;
+    top: 82px;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 14px 32px rgba(33, 28, 24, 0.12);
+    backdrop-filter: blur(12px);
+  }
+
+  .previewDownloadBar button {
+    min-height: 44px;
+    padding: 10px 12px;
+    color: #ffffff;
+    background: var(--accent-dark);
+  }
+
+  .previewDownloadBar .previewActionButton {
+    color: var(--accent-dark);
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+
+  .previewDownloadChoicePanel {
+    top: calc(100% + 8px);
+    bottom: auto;
   }
 
   .previewTop h2 {
@@ -1533,6 +1717,78 @@ textarea {
     transform: scale(calc((100vw - 20px) / 850));
     transform-origin: top left;
     margin: 0;
+  }
+
+  .preview.mobilePreviewOpen .previewPaperWrap {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin: 0 auto;
+    overflow: visible;
+  }
+
+  .preview.mobilePreviewOpen .invoicePaper,
+  .preview.mobilePreviewOpen .professionalInvoice {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    max-width: 850px;
+    min-height: auto;
+    padding: 24px 16px;
+    transform: none;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceHeader {
+    gap: 16px;
+    padding-bottom: 20px;
+  }
+
+  .preview.mobilePreviewOpen .proBrand img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .preview.mobilePreviewOpen .proBrand h1 {
+    font-size: 21px;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTitle h2 {
+    font-size: 32px;
+  }
+
+  .preview.mobilePreviewOpen .proInfoBar,
+  .preview.mobilePreviewOpen .proCustomerSection,
+  .preview.mobilePreviewOpen .ccInvoiceBottom {
+    margin-top: 18px;
+    margin-bottom: 18px;
+  }
+
+  .preview.mobilePreviewOpen .proCustomerBox,
+  .preview.mobilePreviewOpen .proNoteBox,
+  .preview.mobilePreviewOpen .ccSummaryCard {
+    padding: 16px;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable {
+    table-layout: fixed;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable th,
+  .preview.mobilePreviewOpen .proInvoiceTable td {
+    padding: 10px 5px;
+    font-size: 11px;
+    word-break: break-word;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable th {
+    font-size: 8px;
+    letter-spacing: 0;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable th:first-child,
+  .preview.mobilePreviewOpen .proInvoiceTable td:first-child {
+    width: 28px;
   }
 
   .invoicePaper.exportMode,
