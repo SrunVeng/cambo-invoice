@@ -1,95 +1,191 @@
-export function newUid() {
-    if (typeof crypto !== "undefined" && crypto.randomUUID) {
-        return crypto.randomUUID();
+import { calculateItem, formatMoney } from "../utils/invoiceUtils";
+
+export default function InvoicePreview({
+                                           invoiceRef,
+                                           invoice,
+                                           qrImage,
+                                           t,
+                                           lang,
+                                           slogan,
+                                           logoUrl,
+                                           totals,
+                                       }) {
+    const isPaid = invoice.status === "paid";
+
+    function getItemName(item) {
+        if (lang === "kh") {
+            return item.nameKh || item.name || "-";
+        }
+
+        return item.name || item.nameKh || "-";
     }
 
-    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
+    function getDiscountText(item, calculated) {
+        const discountValue = Number(item.discount) || 0;
 
-export function getToday() {
-    return new Date().toISOString().slice(0, 10);
-}
+        if (discountValue <= 0) {
+            return "-";
+        }
 
-export function generateInvoiceNumber() {
-    const now = new Date();
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    const random = Math.floor(1000 + Math.random() * 9000);
-    return `INV-${yyyy}${mm}${dd}-${random}`;
-}
+        if (item.discountType === "percent") {
+            return `${discountValue}% (${formatMoney(calculated.discount)})`;
+        }
 
-export function toNumber(value) {
-    const number = Number(value);
-    return Number.isFinite(number) ? number : 0;
-}
-
-export function discountAmount(baseAmount, discountType, discountValue) {
-    const base = toNumber(baseAmount);
-    const value = toNumber(discountValue);
-
-    if (value <= 0) return 0;
-
-    if (discountType === "percent") {
-        return Math.min(base, (base * value) / 100);
+        return formatMoney(calculated.discount);
     }
 
-    return Math.min(base, value);
-}
+    return (
+        <article className="invoicePaper professionalInvoice" ref={invoiceRef}>
+            {isPaid && <div className="paidStampMark">PAID</div>}
 
-export function calculateItem(item) {
-    const quantity = toNumber(item.qty);
-    const price = toNumber(item.price);
-    const gross = quantity * price;
-    const discount = discountAmount(gross, item.discountType, item.discount);
-    const net = Math.max(0, gross - discount);
+            <header className="proInvoiceHeader">
+                <div className="proBrand">
+                    <img src={logoUrl} alt="Cambodia Coffee" />
 
-    return {
-        gross,
-        discount,
-        net,
-    };
-}
+                    <div>
+                        <h1>Cambodia Coffee</h1>
+                        <p>{slogan[lang]}</p>
+                        <span>{t.website}</span>
+                    </div>
+                </div>
 
-export function calculateInvoice(items, totalDiscountType, totalDiscountValue) {
-    const subtotal = items.reduce((sum, item) => {
-        return sum + calculateItem(item).net;
-    }, 0);
+                <div className="proInvoiceTitle">
+                    <h2>{t.invoice}</h2>
+                </div>
+            </header>
 
-    const totalDiscount = discountAmount(
-        subtotal,
-        totalDiscountType,
-        totalDiscountValue
+            <section className="proInfoBar proInfoBarThree">
+                <div>
+                    <span>{t.invoiceNo}</span>
+                    <strong>{invoice.invoiceNo}</strong>
+                </div>
+
+                <div>
+                    <span>{t.date}</span>
+                    <strong>{invoice.date}</strong>
+                </div>
+
+                <div>
+                    <span>{t.currency}</span>
+                    <strong>USD</strong>
+                </div>
+            </section>
+
+            <section className="proCustomerSection">
+                <div className="proCustomerBox">
+                    <span>{t.billTo}</span>
+                    <h3>{invoice.customerName || "-"}</h3>
+                    <p>{invoice.customerPhone || "-"}</p>
+                    <p>{invoice.customerAddress || "-"}</p>
+                </div>
+
+                <div className="proNoteBox">
+                    <span>{t.note}</span>
+                    <p>{invoice.note || t.thankYou}</p>
+                </div>
+            </section>
+
+            <table className="proInvoiceTable">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{t.description}</th>
+                    <th>{t.qty}</th>
+                    <th>{t.unitPrice}</th>
+                    <th>{t.discount}</th>
+                    <th>{t.total}</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {invoice.items.map((item, index) => {
+                    const calculated = calculateItem(item);
+
+                    return (
+                        <tr key={item.uid}>
+                            <td>{index + 1}</td>
+
+                            <td>
+                                <strong>{getItemName(item)}</strong>
+                                {item.unit && <small>{item.unit}</small>}
+                            </td>
+
+                            <td>{item.qty || 0}</td>
+
+                            <td>{formatMoney(item.price)}</td>
+
+                            <td>{getDiscountText(item, calculated)}</td>
+
+                            <td>
+                                <strong>{formatMoney(calculated.net)}</strong>
+                            </td>
+                        </tr>
+                    );
+                })}
+                </tbody>
+            </table>
+
+            <section className="proBottomSection">
+                <div className="proQrBox" style={qrBoxStyle}>
+                    <span>{t.paymentQr}</span>
+
+                    {qrImage ? (
+                        <img src={qrImage} alt="Payment QR" style={qrImageStyle} />
+                    ) : (
+                        <div className="proEmptyQr" style={emptyQrStyle}>
+                            QR
+                        </div>
+                    )}
+                </div>
+
+                <div className="proSummaryBox">
+                    <div>
+                        <span>{t.subtotal}</span>
+                        <strong>{formatMoney(totals.subtotal)}</strong>
+                    </div>
+
+                    <div>
+                        <span>{t.totalDiscount}</span>
+                        <strong>- {formatMoney(totals.totalDiscount)}</strong>
+                    </div>
+
+                    <div className="proGrandTotal">
+                        <span>{t.grandTotal}</span>
+                        <strong>{formatMoney(totals.grandTotal)}</strong>
+                    </div>
+                </div>
+            </section>
+
+            <footer className="proInvoiceFooter">
+                <p>{t.thankYou}</p>
+                <strong>Cambodia Coffee</strong>
+            </footer>
+        </article>
     );
-
-    const grandTotal = Math.max(0, subtotal - totalDiscount);
-
-    return {
-        subtotal,
-        totalDiscount,
-        grandTotal,
-    };
 }
 
-export function formatMoney(amount, currency) {
-    const value = toNumber(amount);
+const qrBoxStyle = {
+    minWidth: "260px",
+    minHeight: "320px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "14px",
+};
 
-    if (currency === "KHR") {
-        return `${new Intl.NumberFormat("km-KH", {
-            maximumFractionDigits: 0,
-        }).format(value)} ៛`;
-    }
+const qrImageStyle = {
+    width: "220px",
+    maxWidth: "100%",
+    height: "auto",
+    objectFit: "contain",
+    display: "block",
+};
 
-    return `$${new Intl.NumberFormat("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(value)}`;
-}
-
-export function cleanFileName(text) {
-    return String(text || "invoice")
-        .trim()
-        .replace(/[^\w\-]+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|\-$/g, "");
-}
+const emptyQrStyle = {
+    width: "220px",
+    height: "220px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+};

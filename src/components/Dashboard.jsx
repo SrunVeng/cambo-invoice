@@ -26,7 +26,9 @@ export default function Dashboard({
     const [downloadType, setDownloadType] = useState("pdf");
 
     const downloadLabel = lang === "kh" ? "ទាញយក" : "Download";
-    const paidStampLabel = lang === "kh" ? "បោះត្រា PAID លើវិក្កយបត្រ" : "Add PAID stamp on invoice";
+    const paidStampLabel =
+        lang === "kh" ? "បោះត្រា PAID លើវិក្កយបត្រ" : "Add PAID stamp on invoice";
+
     const paidStampHelp =
         lang === "kh"
             ? "ធីកតែពេលអតិថិជនបានបង់ប្រាក់រួច។"
@@ -179,17 +181,6 @@ export default function Dashboard({
                                     onChange={(e) => updateInvoice("date", e.target.value)}
                                 />
                             </label>
-
-                            <label>
-                                {t.currency}
-                                <select
-                                    value={invoice.currency}
-                                    onChange={(e) => updateInvoice("currency", e.target.value)}
-                                >
-                                    <option value="USD">USD</option>
-                                    <option value="KHR">KHR</option>
-                                </select>
-                            </label>
                         </div>
                     </div>
 
@@ -257,13 +248,17 @@ export default function Dashboard({
                                             {t.product}
                                             <select
                                                 value={item.productId}
-                                                onChange={(e) => selectProduct(item.uid, e.target.value)}
+                                                onChange={(e) =>
+                                                    selectProduct(item.uid, e.target.value)
+                                                }
                                             >
                                                 <option value="">{t.selectProduct}</option>
 
                                                 {products.map((product) => (
                                                     <option key={product.id} value={product.id}>
-                                                        {lang === "kh" ? product.nameKh : product.nameEn}
+                                                        {lang === "kh"
+                                                            ? product.nameKh || product.nameEn
+                                                            : product.nameEn}
                                                     </option>
                                                 ))}
                                             </select>
@@ -276,7 +271,8 @@ export default function Dashboard({
                                                 onChange={(e) =>
                                                     updateItem(item.uid, {
                                                         productId: "",
-                                                        [lang === "kh" ? "nameKh" : "name"]: e.target.value,
+                                                        [lang === "kh" ? "nameKh" : "name"]:
+                                                        e.target.value,
                                                     })
                                                 }
                                             />
@@ -340,9 +336,7 @@ export default function Dashboard({
 
                                             <div className="lineTotal">
                                                 <span>{t.total}</span>
-                                                <strong>
-                                                    {formatMoney(itemTotal.net, invoice.currency)}
-                                                </strong>
+                                                <strong>{formatMoney(itemTotal.net)}</strong>
                                             </div>
                                         </div>
                                     </div>
@@ -458,7 +452,7 @@ export default function Dashboard({
                 <section className="preview">
                     <div className="previewTop">
                         <h2>{t.preview}</h2>
-                        <strong>{formatMoney(totals.grandTotal, invoice.currency)}</strong>
+                        <strong>{formatMoney(totals.grandTotal)}</strong>
                     </div>
 
                     <InvoicePreview

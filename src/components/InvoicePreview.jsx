@@ -53,7 +53,7 @@ export default function InvoicePreview({
 
                 <div>
                     <span>{t.currency}</span>
-                    <strong>{invoice.currency}</strong>
+                    <strong>USD</strong>
                 </div>
             </section>
 
@@ -97,10 +97,10 @@ export default function InvoicePreview({
                             </td>
 
                             <td>{item.qty || 0}</td>
-                            <td>{formatMoney(item.price, invoice.currency)}</td>
-                            <td>{formatMoney(calculated.discount, invoice.currency)}</td>
+                            <td>{formatMoney(item.price)}</td>
+                            <td>{formatMoney(calculated.discount)}</td>
                             <td>
-                                <strong>{formatMoney(calculated.net, invoice.currency)}</strong>
+                                <strong>{formatMoney(calculated.net)}</strong>
                             </td>
                         </tr>
                     );
@@ -122,17 +122,17 @@ export default function InvoicePreview({
                 <div className="proSummaryBox">
                     <div>
                         <span>{t.subtotal}</span>
-                        <strong>{formatMoney(totals.subtotal, invoice.currency)}</strong>
+                        <strong>{formatMoney(totals.subtotal)}</strong>
                     </div>
 
                     <div>
                         <span>{t.totalDiscount}</span>
-                        <strong>- {formatMoney(totals.totalDiscount, invoice.currency)}</strong>
+                        <strong>{formatMoney(totals.totalDiscount)}</strong>
                     </div>
 
                     <div className="proGrandTotal">
                         <span>{t.grandTotal}</span>
-                        <strong>{formatMoney(totals.grandTotal, invoice.currency)}</strong>
+                        <strong>{formatMoney(totals.grandTotal)}</strong>
                     </div>
                 </div>
             </section>
