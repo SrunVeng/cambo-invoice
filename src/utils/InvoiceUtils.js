@@ -1,191 +1,115 @@
-import { calculateItem, formatMoney } from "../utils/invoiceUtils";
-
-export default function InvoicePreview({
-                                           invoiceRef,
-                                           invoice,
-                                           qrImage,
-                                           t,
-                                           lang,
-                                           slogan,
-                                           logoUrl,
-                                           totals,
-                                       }) {
-    const isPaid = invoice.status === "paid";
-
-    function getItemName(item) {
-        if (lang === "kh") {
-            return item.nameKh || item.name || "-";
-        }
-
-        return item.name || item.nameKh || "-";
-    }
-
-    function getDiscountText(item, calculated) {
-        const discountValue = Number(item.discount) || 0;
-
-        if (discountValue <= 0) {
-            return "-";
-        }
-
-        if (item.discountType === "percent") {
-            return `${discountValue}% (${formatMoney(calculated.discount)})`;
-        }
-
-        return formatMoney(calculated.discount);
-    }
-
-    return (
-        <article className="invoicePaper professionalInvoice" ref={invoiceRef}>
-            {isPaid && <div className="paidStampMark">PAID</div>}
-
-            <header className="proInvoiceHeader">
-                <div className="proBrand">
-                    <img src={logoUrl} alt="Cambodia Coffee" />
-
-                    <div>
-                        <h1>Cambodia Coffee</h1>
-                        <p>{slogan[lang]}</p>
-                        <span>{t.website}</span>
-                    </div>
-                </div>
-
-                <div className="proInvoiceTitle">
-                    <h2>{t.invoice}</h2>
-                </div>
-            </header>
-
-            <section className="proInfoBar proInfoBarThree">
-                <div>
-                    <span>{t.invoiceNo}</span>
-                    <strong>{invoice.invoiceNo}</strong>
-                </div>
-
-                <div>
-                    <span>{t.date}</span>
-                    <strong>{invoice.date}</strong>
-                </div>
-
-                <div>
-                    <span>{t.currency}</span>
-                    <strong>USD</strong>
-                </div>
-            </section>
-
-            <section className="proCustomerSection">
-                <div className="proCustomerBox">
-                    <span>{t.billTo}</span>
-                    <h3>{invoice.customerName || "-"}</h3>
-                    <p>{invoice.customerPhone || "-"}</p>
-                    <p>{invoice.customerAddress || "-"}</p>
-                </div>
-
-                <div className="proNoteBox">
-                    <span>{t.note}</span>
-                    <p>{invoice.note || t.thankYou}</p>
-                </div>
-            </section>
-
-            <table className="proInvoiceTable">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>{t.description}</th>
-                    <th>{t.qty}</th>
-                    <th>{t.unitPrice}</th>
-                    <th>{t.discount}</th>
-                    <th>{t.total}</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {invoice.items.map((item, index) => {
-                    const calculated = calculateItem(item);
-
-                    return (
-                        <tr key={item.uid}>
-                            <td>{index + 1}</td>
-
-                            <td>
-                                <strong>{getItemName(item)}</strong>
-                                {item.unit && <small>{item.unit}</small>}
-                            </td>
-
-                            <td>{item.qty || 0}</td>
-
-                            <td>{formatMoney(item.price)}</td>
-
-                            <td>{getDiscountText(item, calculated)}</td>
-
-                            <td>
-                                <strong>{formatMoney(calculated.net)}</strong>
-                            </td>
-                        </tr>
-                    );
-                })}
-                </tbody>
-            </table>
-
-            <section className="proBottomSection">
-                <div className="proQrBox" style={qrBoxStyle}>
-                    <span>{t.paymentQr}</span>
-
-                    {qrImage ? (
-                        <img src={qrImage} alt="Payment QR" style={qrImageStyle} />
-                    ) : (
-                        <div className="proEmptyQr" style={emptyQrStyle}>
-                            QR
-                        </div>
-                    )}
-                </div>
-
-                <div className="proSummaryBox">
-                    <div>
-                        <span>{t.subtotal}</span>
-                        <strong>{formatMoney(totals.subtotal)}</strong>
-                    </div>
-
-                    <div>
-                        <span>{t.totalDiscount}</span>
-                        <strong>- {formatMoney(totals.totalDiscount)}</strong>
-                    </div>
-
-                    <div className="proGrandTotal">
-                        <span>{t.grandTotal}</span>
-                        <strong>{formatMoney(totals.grandTotal)}</strong>
-                    </div>
-                </div>
-            </section>
-
-            <footer className="proInvoiceFooter">
-                <p>{t.thankYou}</p>
-                <strong>Cambodia Coffee</strong>
-            </footer>
-        </article>
-    );
+export function toNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : 0;
 }
 
-const qrBoxStyle = {
-    minWidth: "260px",
-    minHeight: "320px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "14px",
-};
+export function newUid() {
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
 
-const qrImageStyle = {
-    width: "220px",
-    maxWidth: "100%",
-    height: "auto",
-    objectFit: "contain",
-    display: "block",
-};
+export function getToday() {
+    return new Date().toISOString().slice(0, 10);
+}
 
-const emptyQrStyle = {
-    width: "220px",
-    height: "220px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-};
+export function generateInvoiceNumber() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const random = Math.floor(1000 + Math.random() * 9000);
+
+    return `INV-${year}${month}${day}-${random}`;
+}
+
+export function cleanFileName(name) {
+    return String(name || "invoice")
+        .trim()
+        .replace(/[^\w\-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
+export function formatMoney(amount) {
+    return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(toNumber(amount));
+}
+
+export function calculateItem(item) {
+    const qty = toNumber(item?.qty);
+    const price = toNumber(item?.price);
+    const discountValue = toNumber(item?.discount);
+
+    const subtotal = qty * price;
+
+    const discount =
+        item?.discountType === "percent"
+            ? subtotal * (discountValue / 100)
+            : discountValue;
+
+    const safeDiscount = Math.min(Math.max(discount, 0), subtotal);
+    const net = Math.max(subtotal - safeDiscount, 0);
+
+    return {
+        subtotal,
+        discount: safeDiscount,
+        net,
+    };
+}
+
+export function calculateInvoice(invoiceOrItems, discountTypeArg, discountArg) {
+    const invoice = Array.isArray(invoiceOrItems)
+        ? {
+            items: invoiceOrItems,
+            totalDiscountType: discountTypeArg || "amount",
+            totalDiscount: discountArg || 0,
+        }
+        : invoiceOrItems || {};
+
+    const items = Array.isArray(invoice.items) ? invoice.items : [];
+
+    const subtotal = items.reduce((sum, item) => {
+        return sum + calculateItem(item).subtotal;
+    }, 0);
+
+    const itemDiscounts = items.reduce((sum, item) => {
+        return sum + calculateItem(item).discount;
+    }, 0);
+
+    const subtotalAfterItemDiscounts = items.reduce((sum, item) => {
+        return sum + calculateItem(item).net;
+    }, 0);
+
+    const totalDiscountValue = toNumber(invoice.totalDiscount);
+
+    const invoiceDiscount =
+        invoice.totalDiscountType === "percent"
+            ? subtotalAfterItemDiscounts * (totalDiscountValue / 100)
+            : totalDiscountValue;
+
+    const safeInvoiceDiscount = Math.min(
+        Math.max(invoiceDiscount, 0),
+        subtotalAfterItemDiscounts
+    );
+
+    const totalDiscount = itemDiscounts + safeInvoiceDiscount;
+
+    const grandTotal = Math.max(
+        subtotalAfterItemDiscounts - safeInvoiceDiscount,
+        0
+    );
+
+    return {
+        subtotal,
+        itemDiscounts,
+        invoiceDiscount: safeInvoiceDiscount,
+        totalDiscount,
+        grandTotal,
+    };
+}
+
+export const calculateTotals = calculateInvoice;

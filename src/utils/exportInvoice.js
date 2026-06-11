@@ -31,7 +31,7 @@ async function createCanvas(element) {
     return html2canvas(element, {
         scale: 2,
         useCORS: true,
-        backgroundColor: "#fffaf2",
+        backgroundColor: "#ffffff",
         logging: false,
     });
 }
@@ -51,7 +51,9 @@ function downloadBlob(blob, filename) {
 
 export async function exportAsImage(element, baseFileName, type = "png") {
     const canvas = await createCanvas(element);
-    const mimeType = type === "jpg" || type === "jpeg" ? "image/jpeg" : "image/png";
+    const mimeType =
+        type === "jpg" || type === "jpeg" ? "image/jpeg" : "image/png";
+
     const extension = mimeType === "image/jpeg" ? "jpg" : "png";
 
     canvas.toBlob(

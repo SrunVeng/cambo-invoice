@@ -3,7 +3,7 @@
 }
 
 :root {
-  font-family: Inter, Arial, "Khmer OS Battambang", sans-serif;
+  font-family: Inter, Arial, "Khmer OS Battambang", "Noto Sans Khmer", sans-serif;
   color: #241814;
   background: #f6f1ec;
 }
@@ -23,6 +23,13 @@ textarea {
 button {
   cursor: pointer;
 }
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* LOGIN */
 
 .loginPage {
   min-height: 100vh;
@@ -59,6 +66,14 @@ button {
   color: #7a665d;
 }
 
+.loginCard small {
+  display: block;
+  margin-top: 14px;
+  color: #9b857a;
+}
+
+/* FORM */
+
 label {
   display: block;
   margin-bottom: 14px;
@@ -90,6 +105,8 @@ textarea:focus {
 textarea {
   resize: vertical;
 }
+
+/* BUTTONS */
 
 .primaryButton,
 .outlineButton,
@@ -142,6 +159,8 @@ textarea {
   font-weight: 700;
 }
 
+/* APP LAYOUT */
+
 .app {
   min-height: 100vh;
   padding: 24px;
@@ -192,6 +211,7 @@ textarea {
 .headerActions select {
   width: auto;
   min-width: 120px;
+  margin-top: 0;
 }
 
 .layout {
@@ -207,6 +227,33 @@ textarea {
   display: grid;
   gap: 16px;
 }
+
+.preview {
+  min-width: 0;
+}
+
+.previewTop {
+  margin-bottom: 16px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 12px 30px rgba(50, 31, 23, 0.07);
+}
+
+.previewTop h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.previewTop strong {
+  font-size: 20px;
+  color: #4a2a20;
+}
+
+/* EDITOR */
 
 .card {
   padding: 20px;
@@ -299,6 +346,8 @@ textarea {
   display: none;
 }
 
+/* DOWNLOAD */
+
 .downloadBar {
   position: sticky;
   bottom: 16px;
@@ -317,37 +366,21 @@ textarea {
   background: #4a2a20;
 }
 
-.downloadBar button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
+.singleDownloadBar {
+  grid-template-columns: 1fr 1.2fr;
 }
 
-.preview {
-  min-width: 0;
+.singleDownloadBar select {
+  margin-top: 0;
+  border-radius: 12px;
 }
 
-.previewTop {
-  margin-bottom: 16px;
-  padding: 18px 20px;
-  border-radius: 20px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 12px 30px rgba(50, 31, 23, 0.07);
-}
+/* INVOICE PAPER */
 
-.previewTop h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.previewTop strong {
-  font-size: 20px;
-  color: #4a2a20;
-}
-
+.invoicePaper,
 .professionalInvoice {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   max-width: 850px;
   min-height: 1120px;
@@ -358,6 +391,8 @@ textarea {
   border: 1px solid #eadfd7;
   box-shadow: 0 24px 70px rgba(50, 31, 23, 0.12);
 }
+
+/* INVOICE HEADER */
 
 .proInvoiceHeader {
   display: flex;
@@ -408,35 +443,13 @@ textarea {
 }
 
 .proInvoiceTitle h2 {
-  margin: 0 0 14px;
+  margin: 0;
   font-size: 42px;
   line-height: 1;
   letter-spacing: -1.5px;
 }
 
-.proStatus {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 108px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.paidStatus {
-  color: #146c43;
-  background: #e8f7ef;
-  border: 1px solid #bfe8cf;
-}
-
-.unpaidStatus {
-  color: #9a4d00;
-  background: #fff3df;
-  border: 1px solid #efd2a2;
-}
+/* INFO BAR */
 
 .proInfoBar {
   display: grid;
@@ -446,6 +459,10 @@ textarea {
   border-radius: 16px;
   overflow: hidden;
   background: #fffaf6;
+}
+
+.proInfoBarThree {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .proInfoBar div {
@@ -459,8 +476,7 @@ textarea {
 
 .proInfoBar span,
 .proCustomerBox span,
-.proNoteBox span,
-.proQrBox span {
+.proNoteBox span {
   display: block;
   margin-bottom: 7px;
   font-size: 10px;
@@ -473,6 +489,8 @@ textarea {
 .proInfoBar strong {
   font-size: 14px;
 }
+
+/* CUSTOMER */
 
 .proCustomerSection {
   display: grid;
@@ -502,6 +520,8 @@ textarea {
   line-height: 1.6;
   color: #6f5d53;
 }
+
+/* TABLE */
 
 .proInvoiceTable {
   width: 100%;
@@ -558,39 +578,178 @@ textarea {
   color: #9b857a;
 }
 
+/* PAYMENT + SUMMARY */
+/* This matches latest InvoicePreview.jsx */
+
+.ccInvoiceBottom {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: start;
+  margin-top: 34px;
+}
+
+.ccPaymentCard {
+  width: 260px;
+  padding: 18px;
+  border: 1px solid #eadfd7;
+  border-radius: 18px;
+  background: #fffaf6;
+  overflow: hidden;
+}
+
+.ccPaymentTitle {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #9b857a;
+  text-transform: uppercase;
+}
+
+.ccPaymentImage {
+  width: 210px;
+  max-width: 210px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+
+.ccEmptyQr {
+  width: 210px;
+  height: 210px;
+  margin: 0 auto;
+  border: 1px dashed #cdb9ad;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #c0a99c;
+  background: #ffffff;
+}
+
+.ccSummaryCard {
+  width: 100%;
+  max-width: 390px;
+  margin-left: auto;
+  padding: 22px;
+  border: 1px solid #eadfd7;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.ccSummaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0e7df;
+}
+
+.ccSummaryRow:first-child {
+  padding-top: 0;
+}
+
+.ccSummaryRow span {
+  font-size: 13px;
+  color: #6f5d53;
+}
+
+.ccSummaryRow strong {
+  font-size: 15px;
+  color: #241814;
+}
+
+.ccGrandTotalClean {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 16px;
+  padding-top: 18px;
+  border-top: 2px solid #241814;
+}
+
+.ccGrandTotalClean div {
+  display: grid;
+  gap: 4px;
+}
+
+.ccGrandTotalClean span {
+  font-size: 15px;
+  font-weight: 900;
+  color: #241814;
+}
+
+.ccGrandTotalClean small {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: #9b857a;
+}
+
+.ccGrandTotalClean strong {
+  font-size: 26px;
+  font-weight: 950;
+  line-height: 1;
+  color: #241814;
+  letter-spacing: -0.8px;
+}
+
+/* OLD CLASS FALLBACK */
+/* Safe if any old InvoicePreview code still remains */
+
 .proBottomSection {
   display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 24px;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
   align-items: start;
   margin-top: 34px;
 }
 
 .proQrBox {
+  width: 260px;
   padding: 18px;
   border: 1px solid #eadfd7;
-  border-radius: 16px;
+  border-radius: 18px;
   background: #fffaf6;
+  overflow: hidden;
 }
 
-.proQrBox img,
-.proEmptyQr {
-  width: 132px;
-  height: 132px;
-  margin: 0 auto;
+.proQrBox span {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #9b857a;
+  text-transform: uppercase;
 }
 
 .proQrBox img {
-  width: 100%;
-  max-width: 100%;
-  height: 100%;
+  width: 210px;
+  max-width: 210px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  margin: 0 auto;
+  border-radius: 10px;
 }
 
 .proEmptyQr {
-  display: grid;
-  place-items: center;
+  width: 210px;
+  height: 210px;
+  margin: 0 auto;
   border: 1px dashed #cdb9ad;
   border-radius: 12px;
+  display: grid;
+  place-items: center;
   font-size: 24px;
   font-weight: 800;
   color: #c0a99c;
@@ -599,24 +758,24 @@ textarea {
 
 .proSummaryBox {
   width: 100%;
-  max-width: 360px;
+  max-width: 390px;
   margin-left: auto;
-  padding: 20px;
+  padding: 22px;
   border: 1px solid #eadfd7;
-  border-radius: 16px;
+  border-radius: 18px;
   background: #ffffff;
 }
 
-.proSummaryBox div {
+.proSummaryBox > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 11px 0;
+  padding: 12px 0;
   border-bottom: 1px solid #f0e7df;
 }
 
-.proSummaryBox div:first-child {
+.proSummaryBox > div:first-child {
   padding-top: 0;
 }
 
@@ -626,25 +785,32 @@ textarea {
 }
 
 .proSummaryBox strong {
-  font-size: 14px;
+  font-size: 15px;
+  color: #241814;
 }
 
 .proGrandTotal {
-  margin-top: 10px;
-  padding: 18px !important;
-  border-bottom: none !important;
-  border-radius: 14px;
-  background: #241814;
+  margin-top: 16px;
+  padding-top: 18px;
+  border-top: 2px solid #241814;
+  border-bottom: none;
+  background: transparent;
+  border-radius: 0;
 }
 
-.proGrandTotal span,
-.proGrandTotal strong {
-  color: #ffffff;
+.proGrandTotal span {
+  font-size: 15px;
+  font-weight: 900;
+  color: #241814;
 }
 
 .proGrandTotal strong {
-  font-size: 24px;
+  font-size: 26px;
+  font-weight: 950;
+  color: #241814;
 }
+
+/* FOOTER */
 
 .proInvoiceFooter {
   display: flex;
@@ -665,62 +831,7 @@ textarea {
   color: #241814;
 }
 
-@media (max-width: 1100px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-
-  .editor {
-    order: 1;
-  }
-
-  .preview {
-    order: 2;
-  }
-}
-
-@media (max-width: 700px) {
-  .app {
-    padding: 14px;
-  }
-
-  .appHeader,
-  .headerActions,
-  .proInvoiceHeader,
-  .proInvoiceFooter {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .grid2,
-  .grid3,
-  .proCustomerSection,
-  .proBottomSection {
-    grid-template-columns: 1fr;
-  }
-
-  .proInfoBar {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .professionalInvoice {
-    padding: 28px;
-  }
-
-  .proInvoiceTitle {
-    text-align: left;
-  }
-
-  .proSummaryBox {
-    max-width: none;
-  }
-}
-
-
-.professionalInvoice {
-  position: relative;
-  overflow: hidden;
-}
+/* PAID STAMP */
 
 .paidStampMark {
   position: absolute;
@@ -740,9 +851,7 @@ textarea {
   pointer-events: none;
 }
 
-.proInfoBarThree {
-  grid-template-columns: repeat(3, 1fr);
-}
+/* CHECKBOX + STAMP TOOL */
 
 .checkboxLine {
   display: flex;
@@ -776,15 +885,6 @@ textarea {
   color: #806b5f;
 }
 
-.singleDownloadBar {
-  grid-template-columns: 1fr 1.2fr;
-}
-
-.singleDownloadBar select {
-  margin-top: 0;
-  border-radius: 12px;
-}
-
 .paidStampTool p {
   margin: -4px 0 14px;
   font-size: 13px;
@@ -811,7 +911,111 @@ textarea {
   color: #5a463d;
 }
 
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .editor {
+    order: 1;
+  }
+
+  .preview {
+    order: 2;
+  }
+}
+
 @media (max-width: 700px) {
+  .app {
+    padding: 14px;
+  }
+
+  .appHeader,
+  .headerActions,
+  .proInvoiceHeader,
+  .proInvoiceFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .headerActions {
+    width: 100%;
+  }
+
+  .headerActions select,
+  .headerActions button {
+    width: 100%;
+  }
+
+  .grid2,
+  .grid3,
+  .proCustomerSection,
+  .ccInvoiceBottom,
+  .proBottomSection {
+    grid-template-columns: 1fr;
+  }
+
+  .proInfoBar,
+  .proInfoBarThree {
+    grid-template-columns: 1fr;
+  }
+
+  .invoicePaper,
+  .professionalInvoice {
+    padding: 28px;
+    min-height: auto;
+  }
+
+  .proInvoiceTitle {
+    text-align: left;
+  }
+
+  .proInvoiceTitle h2 {
+    font-size: 38px;
+  }
+
+  .proBrand {
+    align-items: flex-start;
+  }
+
+  .proBrand h1 {
+    font-size: 24px;
+  }
+
+  .ccPaymentCard,
+  .proQrBox {
+    width: 100%;
+  }
+
+  .ccPaymentImage,
+  .proQrBox img {
+    width: 210px;
+    max-width: 210px;
+  }
+
+  .ccEmptyQr,
+  .proEmptyQr {
+    width: 210px;
+    height: 210px;
+  }
+
+  .ccSummaryCard,
+  .proSummaryBox {
+    max-width: none;
+  }
+
+  .ccGrandTotalClean {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ccGrandTotalClean strong,
+  .proGrandTotal strong {
+    font-size: 24px;
+  }
+
   .paidStampMark {
     top: 210px;
     right: 34px;
@@ -819,11 +1023,40 @@ textarea {
     padding: 12px 24px;
   }
 
-  .proInfoBarThree {
-    grid-template-columns: 1fr;
-  }
-
   .singleDownloadBar {
     grid-template-columns: 1fr;
+  }
+}
+
+/* PRINT / EXPORT */
+
+@media print {
+  body {
+    background: #ffffff;
+  }
+
+  .appHeader,
+  .editor,
+  .previewTop {
+    display: none;
+  }
+
+  .app {
+    padding: 0;
+  }
+
+  .layout {
+    display: block;
+    max-width: none;
+  }
+
+  .invoicePaper,
+  .professionalInvoice {
+    max-width: none;
+    width: 100%;
+    min-height: auto;
+    padding: 44px;
+    border: none;
+    box-shadow: none;
   }
 }

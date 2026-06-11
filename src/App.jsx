@@ -187,11 +187,7 @@ export default function App() {
   const t = text[lang];
 
   const totals = useMemo(() => {
-    return calculateInvoice(
-        invoice.items,
-        invoice.totalDiscountType,
-        invoice.totalDiscount
-    );
+    return calculateInvoice(invoice);
   }, [invoice]);
 
   function handleLogin(e) {

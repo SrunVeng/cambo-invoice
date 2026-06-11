@@ -11,6 +11,7 @@ export default function InvoicePreview({
                                            totals,
                                        }) {
     const isPaid = invoice.status === "paid";
+    const hasDiscount = Number(totals.totalDiscount) > 0;
 
     function getItemName(item) {
         if (lang === "kh") {
@@ -18,6 +19,20 @@ export default function InvoicePreview({
         }
 
         return item.name || item.nameKh || "-";
+    }
+
+    function getDiscountText(item, calculated) {
+        const discountValue = Number(item.discount) || 0;
+
+        if (discountValue <= 0) {
+            return "-";
+        }
+
+        if (item.discountType === "percent") {
+            return `${discountValue}% (${formatMoney(calculated.discount)})`;
+        }
+
+        return formatMoney(calculated.discount);
     }
 
     return (
@@ -98,7 +113,8 @@ export default function InvoicePreview({
 
                             <td>{item.qty || 0}</td>
                             <td>{formatMoney(item.price)}</td>
-                            <td>{formatMoney(calculated.discount)}</td>
+                            <td>{getDiscountText(item, calculated)}</td>
+
                             <td>
                                 <strong>{formatMoney(calculated.net)}</strong>
                             </td>
@@ -108,30 +124,35 @@ export default function InvoicePreview({
                 </tbody>
             </table>
 
-            <section className="proBottomSection">
-                <div className="proQrBox">
-                    <span>{t.paymentQr}</span>
+            <section className="ccInvoiceBottom">
+                <div className="ccPaymentCard">
+                    <span className="ccPaymentTitle">{t.paymentQr}</span>
 
                     {qrImage ? (
-                        <img src={qrImage} alt="Payment QR" />
+                        <img className="ccPaymentImage" src={qrImage} alt="Payment QR" />
                     ) : (
-                        <div className="proEmptyQr">QR</div>
+                        <div className="ccEmptyQr">QR</div>
                     )}
                 </div>
 
-                <div className="proSummaryBox">
-                    <div>
+                <div className="ccSummaryCard">
+                    <div className="ccSummaryRow">
                         <span>{t.subtotal}</span>
                         <strong>{formatMoney(totals.subtotal)}</strong>
                     </div>
 
-                    <div>
-                        <span>{t.totalDiscount}</span>
-                        <strong>{formatMoney(totals.totalDiscount)}</strong>
-                    </div>
+                    {hasDiscount && (
+                        <div className="ccSummaryRow">
+                            <span>{t.totalDiscount}</span>
+                            <strong>{formatMoney(totals.totalDiscount)}</strong>
+                        </div>
+                    )}
 
-                    <div className="proGrandTotal">
-                        <span>{t.grandTotal}</span>
+                    <div className="ccGrandTotalClean">
+                        <div>
+                            <span>{t.grandTotal}</span>
+                        </div>
+
                         <strong>{formatMoney(totals.grandTotal)}</strong>
                     </div>
                 </div>
