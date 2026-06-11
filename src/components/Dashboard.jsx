@@ -5,7 +5,7 @@ import { exportAll, exportAsImage, exportAsPDF } from "../utils/exportInvoice.js
 import InvoicePreview from "./InvoicePreview";
 import PaidStampTool from "./PaidStampTool";
 
-const CURRENCY_OPTIONS = ["USD", "KHR"];
+const SUPPORTED_CURRENCY = "USD";
 
 export default function Dashboard({
                                       lang,
@@ -35,11 +35,21 @@ export default function Dashboard({
         lang === "kh"
             ? "ធីកតែពេលអតិថិជនបានបង់ប្រាក់រួច។"
             : "Only tick this after the customer has paid.";
-    const currency = invoice.currency || "USD";
+    const currency = SUPPORTED_CURRENCY;
+    const isPaid = invoice.status === "paid";
+    const statusText = invoice.status === "paid" ? t.paid : t.unpaid;
 
     function updateInvoice(field, value) {
         setInvoice((prev) => ({
             ...prev,
+            [field]: value,
+        }));
+    }
+
+    function updateInvoiceWithUsd(field, value) {
+        setInvoice((prev) => ({
+            ...prev,
+            currency: SUPPORTED_CURRENCY,
             [field]: value,
         }));
     }
@@ -90,16 +100,41 @@ export default function Dashboard({
     }
 
     function uploadQr(e) {
+        if (isPaid) {
+            e.target.value = "";
+            return;
+        }
+
         const file = e.target.files?.[0];
         if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            alert("Please upload an image file.");
+            e.target.value = "";
+            return;
+        }
 
         const reader = new FileReader();
 
         reader.onload = () => {
             setQrImage(reader.result);
+            e.target.value = "";
+        };
+
+        reader.onerror = () => {
+            alert("Could not read QR image.");
+            e.target.value = "";
         };
 
         reader.readAsDataURL(file);
+    }
+
+    function updatePaymentStatus(nextStatus) {
+        updateInvoice("status", nextStatus);
+
+        if (nextStatus === "paid") {
+            setQrImage("");
+        }
     }
 
     async function downloadInvoice(type) {
@@ -109,6 +144,10 @@ export default function Dashboard({
             }
 
             setIsExporting(true);
+            invoiceRef.current.classList.add("exportMode");
+            invoiceRef.current
+                .closest(".previewPaperWrap")
+                ?.classList.add("exportModeWrap");
 
             const fileName = `${invoice.invoiceNo}-${invoice.customerName || "customer"}`;
 
@@ -130,6 +169,10 @@ export default function Dashboard({
         } catch (error) {
             alert(error.message || "Export failed");
         } finally {
+            invoiceRef.current?.classList.remove("exportMode");
+            invoiceRef.current
+                ?.closest(".previewPaperWrap")
+                ?.classList.remove("exportModeWrap");
             setIsExporting(false);
         }
     }
@@ -164,15 +207,39 @@ export default function Dashboard({
 
             <section className="layout">
                 <aside className="editor">
+                    <div className="mobileTotalBar">
+                        <span>{t.grandTotal}</span>
+                        <strong>{formatMoney(totals.grandTotal, currency)}</strong>
+                    </div>
+
+                    <div className="summaryPanel">
+                        <div>
+                            <span>{t.subtotal}</span>
+                            <strong>{formatMoney(totals.subtotal, currency)}</strong>
+                        </div>
+
+                        <div>
+                            <span>{t.totalDiscount}</span>
+                            <strong>{formatMoney(totals.totalDiscount, currency)}</strong>
+                        </div>
+
+                        <div>
+                            <span>{t.status}</span>
+                            <strong className={isPaid ? "paidText" : ""}>
+                                {statusText}
+                            </strong>
+                        </div>
+                    </div>
+
                     <div className="card">
                         <h2>{t.invoiceInfo}</h2>
 
-                        <div className="grid3">
+                        <div className="grid2">
                             <label>
                                 {t.invoiceNo}
                                 <input
                                     value={invoice.invoiceNo}
-                                    onChange={(e) => updateInvoice("invoiceNo", e.target.value)}
+                                    readOnly
                                 />
                             </label>
 
@@ -181,24 +248,10 @@ export default function Dashboard({
                                 <input
                                     type="date"
                                     value={invoice.date}
-                                    onChange={(e) => updateInvoice("date", e.target.value)}
-                                />
-                            </label>
-
-                            <label>
-                                {t.currency}
-                                <select
-                                    value={currency}
                                     onChange={(e) =>
-                                        updateInvoice("currency", e.target.value)
+                                        updateInvoiceWithUsd("date", e.target.value)
                                     }
-                                >
-                                    {CURRENCY_OPTIONS.map((option) => (
-                                        <option key={option} value={option}>
-                                            {option}
-                                        </option>
-                                    ))}
-                                </select>
+                                />
                             </label>
                         </div>
                     </div>
@@ -210,6 +263,7 @@ export default function Dashboard({
                             {t.name}
                             <input
                                 value={invoice.customerName}
+                                placeholder={t.name}
                                 onChange={(e) => updateInvoice("customerName", e.target.value)}
                             />
                         </label>
@@ -217,7 +271,9 @@ export default function Dashboard({
                         <label>
                             {t.phone}
                             <input
+                                inputMode="tel"
                                 value={invoice.customerPhone}
+                                placeholder={t.phone}
                                 onChange={(e) => updateInvoice("customerPhone", e.target.value)}
                             />
                         </label>
@@ -227,6 +283,7 @@ export default function Dashboard({
                             <textarea
                                 rows="3"
                                 value={invoice.customerAddress}
+                                placeholder={t.address}
                                 onChange={(e) =>
                                     updateInvoice("customerAddress", e.target.value)
                                 }
@@ -398,29 +455,51 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    <div className="card">
-                        <h2>{t.paymentQr}</h2>
+                    <div className="card paymentCard">
+                        <h2>{t.payment}</h2>
 
-                        <label className="uploadBox">
-                            <input type="file" accept="image/*" onChange={uploadQr} />
-                            {t.uploadQr}
+                        <label className="checkboxLine">
+                            <input
+                                type="checkbox"
+                                checked={isPaid}
+                                onChange={(e) =>
+                                    updatePaymentStatus(
+                                        e.target.checked ? "paid" : "unpaid"
+                                    )
+                                }
+                            />
+
+                            <span>
+                                <strong>{paidStampLabel}</strong>
+                                <small>{paidStampHelp}</small>
+                            </span>
                         </label>
 
-                        {qrImage && (
-                            <button
-                                type="button"
-                                onClick={() => setQrImage("")}
-                                className="outlineButton full"
-                            >
-                                {t.removeQr}
-                            </button>
-                        )}
-                    </div>
+                        {!isPaid && (
+                            <>
+                                <label className="uploadBox">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={uploadQr}
+                                    />
+                                    {t.uploadQr}
+                                </label>
 
-                    <div className="card">
-                        <h2>{t.note}</h2>
+                                {qrImage && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setQrImage("")}
+                                        className="outlineButton full"
+                                    >
+                                        {t.removeQr}
+                                    </button>
+                                )}
+                            </>
+                        )}
 
                         <textarea
+                            className="noteInput"
                             rows="3"
                             value={invoice.note}
                             onChange={(e) => updateInvoice("note", e.target.value)}
@@ -428,26 +507,10 @@ export default function Dashboard({
                         />
                     </div>
 
-                    <div className="card">
-                        <h2>Payment Stamp</h2>
-
-                        <label className="checkboxLine">
-                            <input
-                                type="checkbox"
-                                checked={invoice.status === "paid"}
-                                onChange={(e) =>
-                                    updateInvoice("status", e.target.checked ? "paid" : "unpaid")
-                                }
-                            />
-
-                            <span>
-                <strong>{paidStampLabel}</strong>
-                <small>{paidStampHelp}</small>
-              </span>
-                        </label>
-                    </div>
-
-                    <PaidStampTool />
+                    <details className="advancedPanel">
+                        <summary>{t.stampExisting}</summary>
+                        <PaidStampTool />
+                    </details>
 
                     <div className="downloadBar singleDownloadBar">
                         <select
@@ -476,16 +539,18 @@ export default function Dashboard({
                         <strong>{formatMoney(totals.grandTotal, currency)}</strong>
                     </div>
 
-                    <InvoicePreview
-                        invoiceRef={invoiceRef}
-                        invoice={invoice}
-                        qrImage={qrImage}
-                        t={t}
-                        lang={lang}
-                        slogan={slogan}
-                        logoUrl={logoUrl}
-                        totals={totals}
-                    />
+                    <div className="previewPaperWrap">
+                        <InvoicePreview
+                            invoiceRef={invoiceRef}
+                            invoice={invoice}
+                            qrImage={qrImage}
+                            t={t}
+                            lang={lang}
+                            slogan={slogan}
+                            logoUrl={logoUrl}
+                            totals={totals}
+                        />
+                    </div>
                 </section>
             </section>
         </main>

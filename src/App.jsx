@@ -54,6 +54,7 @@ const text = {
     addItem: "Add Item",
     remove: "Remove",
     totalDiscount: "Total Discount",
+    payment: "Payment",
     paymentQr: "Payment QR",
     uploadQr: "Upload QR",
     removeQr: "Remove QR",
@@ -75,6 +76,7 @@ const text = {
     exportAll: "All",
     exporting: "Exporting...",
     preview: "Invoice Preview",
+    stampExisting: "Stamp Existing Invoice",
     website: "www.coffeecambodia.com",
   },
 
@@ -112,6 +114,7 @@ const text = {
     addItem: "បន្ថែម",
     remove: "លុប",
     totalDiscount: "បញ្ចុះតម្លៃសរុប",
+    payment: "ការបង់ប្រាក់",
     paymentQr: "QR បង់ប្រាក់",
     uploadQr: "បញ្ចូល QR",
     removeQr: "លុប QR",
@@ -133,6 +136,7 @@ const text = {
     exportAll: "ទាំងអស់",
     exporting: "កំពុងទាញយក...",
     preview: "មើលវិក្កយបត្រ",
+    stampExisting: "បោះត្រាវិក្កយបត្រចាស់",
     website: "www.coffeecambodia.com",
   },
 };

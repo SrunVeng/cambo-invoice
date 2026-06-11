@@ -193,9 +193,7 @@ export default function PaidStampTool() {
     }
 
     return (
-        <div className="card paidStampTool">
-            <h2>Stamp Existing Invoice</h2>
-
+        <div className="paidStampTool">
             <p>
                 Upload an old invoice PDF, PNG, or JPG, then download a new copy with a
                 PAID stamp.

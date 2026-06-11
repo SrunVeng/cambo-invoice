@@ -12,7 +12,8 @@ export default function InvoicePreview({
 }) {
     const isPaid = invoice.status === "paid";
     const hasDiscount = Number(totals.totalDiscount) > 0;
-    const currency = invoice.currency || "USD";
+    const currency = "USD";
+    const showPaymentQr = Boolean(qrImage) && !isPaid;
 
     function getItemName(item) {
         if (lang === "kh") {
@@ -125,16 +126,17 @@ export default function InvoicePreview({
                 </tbody>
             </table>
 
-            <section className="ccInvoiceBottom">
-                <div className="ccPaymentCard">
-                    <span className="ccPaymentTitle">{t.paymentQr}</span>
-
-                    {qrImage ? (
+            <section
+                className={`ccInvoiceBottom${
+                    showPaymentQr ? "" : " ccInvoiceBottomSummaryOnly"
+                }`}
+            >
+                {showPaymentQr && (
+                    <div className="ccPaymentCard">
+                        <span className="ccPaymentTitle">{t.paymentQr}</span>
                         <img className="ccPaymentImage" src={qrImage} alt="Payment QR" />
-                    ) : (
-                        <div className="ccEmptyQr">QR</div>
-                    )}
-                </div>
+                    </div>
+                )}
 
                 <div className="ccSummaryCard">
                     <div className="ccSummaryRow">

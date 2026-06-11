@@ -4,13 +4,25 @@
 
 :root {
   font-family: Inter, Arial, "Khmer OS Battambang", "Noto Sans Khmer", sans-serif;
-  color: #241814;
-  background: #f6f1ec;
+  color: #181514;
+  background: #f4f5f2;
+  --page: #f4f5f2;
+  --surface: #ffffff;
+  --surface-soft: #f8f5f1;
+  --ink: #181514;
+  --muted: #6f6760;
+  --line: #ded8d0;
+  --accent: #2f5d50;
+  --accent-dark: #203f37;
+  --danger: #a23a28;
+  --warning-soft: #fff4ed;
+  --shadow: 0 14px 34px rgba(33, 28, 24, 0.08);
 }
 
 body {
   margin: 0;
-  background: #f6f1ec;
+  background: var(--page);
+  -webkit-text-size-adjust: 100%;
 }
 
 button,
@@ -22,6 +34,7 @@ textarea {
 
 button {
   cursor: pointer;
+  min-height: 44px;
 }
 
 button:disabled {
@@ -79,7 +92,7 @@ label {
   margin-bottom: 14px;
   font-size: 13px;
   font-weight: 700;
-  color: #5a463d;
+  color: #49413b;
 }
 
 input,
@@ -87,19 +100,51 @@ select,
 textarea {
   width: 100%;
   margin-top: 7px;
-  padding: 11px 12px;
-  border: 1px solid #dacbc1;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #241814;
+  min-height: 48px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background-color: var(--surface);
+  color: var(--ink);
   outline: none;
+  transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 42px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--accent-dark) 50%),
+    linear-gradient(135deg, var(--accent-dark) 50%, transparent 50%);
+  background-position:
+    calc(100% - 21px) 21px,
+    calc(100% - 15px) 21px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+select::-ms-expand {
+  display: none;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: #9f6846;
-  box-shadow: 0 0 0 3px rgba(159, 104, 70, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(47, 93, 80, 0.13);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a1978f;
+}
+
+input[readonly] {
+  background: #f1f2ee;
+  color: #5d5650;
+  cursor: copy;
 }
 
 textarea {
@@ -122,14 +167,14 @@ textarea {
   width: 100%;
   padding: 13px 18px;
   color: #ffffff;
-  background: #4a2a20;
+  background: var(--accent-dark);
 }
 
 .outlineButton {
   padding: 10px 14px;
-  color: #4a2a20;
-  background: #fffaf6;
-  border: 1px solid #d8c6b9;
+  color: var(--accent-dark);
+  background: var(--surface);
+  border: 1px solid var(--line);
 }
 
 .outlineButton.full {
@@ -140,13 +185,13 @@ textarea {
 .smallButton {
   padding: 9px 12px;
   color: #ffffff;
-  background: #4a2a20;
+  background: var(--accent-dark);
 }
 
 .removeButton {
   padding: 7px 10px;
-  color: #9a3412;
-  background: #fff0e8;
+  color: var(--danger);
+  background: var(--warning-soft);
 }
 
 .errorMessage {
@@ -164,19 +209,25 @@ textarea {
 .app {
   min-height: 100vh;
   padding: 24px;
+  padding-bottom: 96px;
+  background:
+    radial-gradient(circle at top left, rgba(47, 93, 80, 0.12), transparent 340px),
+    var(--page);
 }
 
 .appHeader {
-  max-width: 1500px;
+  max-width: 1440px;
   margin: 0 auto 24px;
-  padding: 18px 22px;
+  padding: 14px 16px;
   display: flex;
   justify-content: space-between;
   gap: 20px;
   align-items: center;
-  border-radius: 22px;
-  background: #ffffff;
-  box-shadow: 0 14px 40px rgba(50, 31, 23, 0.08);
+  border: 1px solid rgba(222, 216, 208, 0.8);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
 }
 
 .appBrand {
@@ -186,19 +237,19 @@ textarea {
 }
 
 .appBrand img {
-  width: 58px;
-  height: 58px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
 }
 
 .appBrand h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 21px;
 }
 
 .appBrand p {
   margin: 4px 0 0;
-  color: #806b5f;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -215,10 +266,10 @@ textarea {
 }
 
 .layout {
-  max-width: 1500px;
+  max-width: 1440px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 480px 1fr;
+  grid-template-columns: minmax(420px, 520px) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -228,19 +279,68 @@ textarea {
   gap: 16px;
 }
 
+.mobileTotalBar {
+  display: none;
+}
+
+.summaryPanel {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.summaryPanel > div {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(222, 216, 208, 0.92);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 8px 20px rgba(33, 28, 24, 0.05);
+}
+
+.summaryPanel span {
+  display: block;
+  margin-bottom: 6px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.summaryPanel strong {
+  display: block;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summaryPanel .paidText {
+  color: var(--accent);
+}
+
 .preview {
   min-width: 0;
 }
 
+.previewPaperWrap {
+  width: 100%;
+}
+
 .previewTop {
   margin-bottom: 16px;
-  padding: 18px 20px;
-  border-radius: 20px;
-  background: #ffffff;
+  padding: 16px 18px;
+  border: 1px solid rgba(222, 216, 208, 0.9);
+  border-radius: 16px;
+  background: var(--surface);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 12px 30px rgba(50, 31, 23, 0.07);
+  box-shadow: var(--shadow);
 }
 
 .previewTop h2 {
@@ -250,21 +350,23 @@ textarea {
 
 .previewTop strong {
   font-size: 20px;
-  color: #4a2a20;
+  color: var(--accent-dark);
 }
 
 /* EDITOR */
 
 .card {
-  padding: 20px;
-  border-radius: 20px;
-  background: #ffffff;
-  box-shadow: 0 12px 30px rgba(50, 31, 23, 0.07);
+  padding: 18px;
+  border: 1px solid rgba(222, 216, 208, 0.92);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(33, 28, 24, 0.06);
 }
 
 .card h2 {
   margin: 0 0 16px;
-  font-size: 18px;
+  font-size: 17px;
+  color: var(--ink);
 }
 
 .cardTitleRow {
@@ -298,9 +400,9 @@ textarea {
 
 .itemBox {
   padding: 16px;
-  border: 1px solid #eadfd7;
-  border-radius: 16px;
-  background: #fffaf6;
+  border: 1px solid rgba(222, 216, 208, 0.95);
+  border-radius: 14px;
+  background: var(--surface-soft);
 }
 
 .itemTop {
@@ -314,16 +416,16 @@ textarea {
 .lineTotal {
   margin-top: 7px;
   padding: 11px 12px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid #eadfd7;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
 }
 
 .lineTotal span {
   display: block;
   margin-bottom: 4px;
   font-size: 12px;
-  color: #806b5f;
+  color: var(--muted);
 }
 
 .lineTotal strong {
@@ -334,12 +436,20 @@ textarea {
   display: grid;
   place-items: center;
   min-height: 90px;
-  border: 1px dashed #bca89a;
-  border-radius: 16px;
-  background: #fffaf6;
-  color: #5a3227;
+  padding: 14px;
+  border: 1px dashed #a9b9b1;
+  border-radius: 14px;
+  background: #f5faf7;
+  color: var(--accent-dark);
   font-weight: 800;
   cursor: pointer;
+  text-align: center;
+  transition: border-color 140ms ease, background 140ms ease;
+}
+
+.uploadBox:hover {
+  border-color: var(--accent);
+  background: #eef7f2;
 }
 
 .uploadBox input {
@@ -350,20 +460,23 @@ textarea {
 
 .downloadBar {
   position: sticky;
-  bottom: 16px;
+  bottom: max(16px, env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  padding: 12px;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 18px 45px rgba(50, 31, 23, 0.16);
+  padding: 10px;
+  border: 1px solid rgba(222, 216, 208, 0.9);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 18px 42px rgba(33, 28, 24, 0.14);
+  backdrop-filter: blur(12px);
+  z-index: 20;
 }
 
 .downloadBar button {
   padding: 12px 10px;
   color: #ffffff;
-  background: #4a2a20;
+  background: var(--accent-dark);
 }
 
 .singleDownloadBar {
@@ -373,6 +486,21 @@ textarea {
 .singleDownloadBar select {
   margin-top: 0;
   border-radius: 12px;
+}
+
+.paymentCard {
+  display: grid;
+  gap: 14px;
+}
+
+.paymentCard h2 {
+  margin-bottom: 2px;
+}
+
+.paymentCard .uploadBox,
+.paymentCard .outlineButton.full,
+.paymentCard .noteInput {
+  margin-top: 0;
 }
 
 /* INVOICE PAPER */
@@ -589,6 +717,10 @@ textarea {
   margin-top: 34px;
 }
 
+.ccInvoiceBottomSummaryOnly {
+  grid-template-columns: 1fr;
+}
+
 .ccPaymentCard {
   width: 260px;
   padding: 18px;
@@ -618,20 +750,6 @@ textarea {
   border-radius: 10px;
 }
 
-.ccEmptyQr {
-  width: 210px;
-  height: 210px;
-  margin: 0 auto;
-  border: 1px dashed #cdb9ad;
-  border-radius: 12px;
-  display: grid;
-  place-items: center;
-  font-size: 24px;
-  font-weight: 800;
-  color: #c0a99c;
-  background: #ffffff;
-}
-
 .ccSummaryCard {
   width: 100%;
   max-width: 390px;
@@ -640,6 +758,10 @@ textarea {
   border: 1px solid #eadfd7;
   border-radius: 18px;
   background: #ffffff;
+}
+
+.ccInvoiceBottomSummaryOnly .ccSummaryCard {
+  margin-left: auto;
 }
 
 .ccSummaryRow {
@@ -865,7 +987,7 @@ textarea {
   width: 20px;
   height: 20px;
   margin: 3px 0 0;
-  accent-color: #4a2a20;
+  accent-color: var(--accent);
   box-shadow: none;
 }
 
@@ -876,20 +998,20 @@ textarea {
 
 .checkboxLine strong {
   font-size: 14px;
-  color: #241814;
+  color: var(--ink);
 }
 
 .checkboxLine small {
   font-size: 12px;
   line-height: 1.5;
-  color: #806b5f;
+  color: var(--muted);
 }
 
 .paidStampTool p {
   margin: -4px 0 14px;
   font-size: 13px;
   line-height: 1.5;
-  color: #806b5f;
+  color: var(--muted);
 }
 
 .stampButton {
@@ -904,11 +1026,37 @@ textarea {
 .stampMessage {
   margin-top: 12px;
   padding: 10px 12px;
-  border-radius: 12px;
-  background: #fffaf6;
-  border: 1px solid #eadfd7;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft);
   font-size: 13px;
-  color: #5a463d;
+  color: #49413b;
+}
+
+.advancedPanel {
+  border: 1px solid rgba(222, 216, 208, 0.92);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(33, 28, 24, 0.06);
+  overflow: hidden;
+}
+
+.advancedPanel summary {
+  min-height: 52px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.advancedPanel .paidStampTool {
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* RESPONSIVE */
@@ -928,8 +1076,22 @@ textarea {
 }
 
 @media (max-width: 700px) {
+  :root {
+    background: var(--page);
+  }
+
   .app {
-    padding: 14px;
+    padding: 10px 10px 104px;
+  }
+
+  .appHeader {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    margin: -10px -10px 12px;
+    padding: 12px 10px;
+    border-radius: 0;
+    box-shadow: 0 10px 28px rgba(33, 28, 24, 0.08);
   }
 
   .appHeader,
@@ -942,11 +1104,97 @@ textarea {
 
   .headerActions {
     width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .headerActions select {
+    grid-column: 1 / -1;
   }
 
   .headerActions select,
-  .headerActions button {
+  .headerActions button,
+  .downloadBar button {
     width: 100%;
+  }
+
+  .appBrand {
+    gap: 10px;
+  }
+
+  .appBrand img {
+    width: 46px;
+    height: 46px;
+  }
+
+  .appBrand h1 {
+    font-size: 19px;
+  }
+
+  .appBrand p {
+    display: none;
+  }
+
+  .layout {
+    gap: 14px;
+  }
+
+  .editor {
+    gap: 12px;
+  }
+
+  .mobileTotalBar {
+    position: sticky;
+    top: 120px;
+    z-index: 15;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 12px 28px rgba(33, 28, 24, 0.08);
+  }
+
+  .mobileTotalBar span {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .mobileTotalBar strong {
+    font-size: 22px;
+    color: var(--accent-dark);
+  }
+
+  .summaryPanel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .summaryPanel > div:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .card,
+  .advancedPanel {
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(33, 28, 24, 0.06);
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .card h2,
+  .advancedPanel summary {
+    font-size: 16px;
+  }
+
+  label {
+    margin-bottom: 12px;
   }
 
   .grid2,
@@ -962,10 +1210,84 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .itemBox {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .itemTop {
+    align-items: flex-start;
+  }
+
+  .removeButton {
+    min-width: 74px;
+  }
+
+  .lineTotal {
+    margin-top: 0;
+  }
+
+  .downloadBar {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+
+  .singleDownloadBar {
+    grid-template-columns: 0.8fr 1.2fr;
+  }
+
+  .preview {
+    overflow: hidden;
+  }
+
+  .previewPaperWrap {
+    position: relative;
+    height: calc(1120px * ((100vw - 20px) / 850));
+    overflow: hidden;
+  }
+
+  .previewPaperWrap.exportModeWrap {
+    height: auto;
+    overflow: visible;
+  }
+
+  .previewTop {
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+  }
+
+  .previewTop h2 {
+    font-size: 16px;
+  }
+
+  .previewTop strong {
+    font-size: 18px;
+  }
+
   .invoicePaper,
   .professionalInvoice {
-    padding: 28px;
-    min-height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 850px;
+    max-width: none;
+    min-height: 1120px;
+    padding: 42px;
+    transform: scale(calc((100vw - 20px) / 850));
+    transform-origin: top left;
+    margin: 0;
+  }
+
+  .invoicePaper.exportMode,
+  .professionalInvoice.exportMode {
+    position: relative;
+    transform: none;
   }
 
   .proInvoiceTitle {
@@ -995,7 +1317,6 @@ textarea {
     max-width: 210px;
   }
 
-  .ccEmptyQr,
   .proEmptyQr {
     width: 210px;
     height: 210px;
@@ -1023,7 +1344,38 @@ textarea {
     padding: 12px 24px;
   }
 
-  .singleDownloadBar {
+}
+
+@media (max-width: 420px) {
+  .headerActions {
+    gap: 8px;
+  }
+
+  .outlineButton,
+  .smallButton,
+  .removeButton {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .summaryPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .cardTitleRow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cardTitleRow .smallButton {
+    width: 100%;
+  }
+
+  .mobileTotalBar {
+    top: 116px;
+  }
+
+  .downloadBar {
     grid-template-columns: 1fr;
   }
 }
