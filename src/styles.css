@@ -4,19 +4,21 @@
 
 :root {
   font-family: Inter, Arial, "Khmer OS Battambang", "Noto Sans Khmer", sans-serif;
-  color: #181514;
-  background: #f4f5f2;
-  --page: #f4f5f2;
+  color: #151716;
+  background: #f5f6f4;
+  --page: #f5f6f4;
   --surface: #ffffff;
-  --surface-soft: #f8f5f1;
-  --ink: #181514;
-  --muted: #6f6760;
-  --line: #ded8d0;
-  --accent: #2f5d50;
-  --accent-dark: #203f37;
+  --surface-soft: #f7f8f6;
+  --surface-raised: #fbfbfa;
+  --ink: #151716;
+  --muted: #656b66;
+  --line: #e1d7cf;
+  --accent: #7a241c;
+  --accent-dark: #4f1712;
   --danger: #a23a28;
   --warning-soft: #fff4ed;
-  --shadow: 0 14px 34px rgba(33, 28, 24, 0.08);
+  --shadow: 0 10px 24px rgba(38, 25, 20, 0.06);
+  --shadow-strong: 0 18px 44px rgba(38, 25, 20, 0.12);
 }
 
 body {
@@ -35,11 +37,16 @@ textarea {
 button {
   cursor: pointer;
   min-height: 44px;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
 }
 
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+button:not(:disabled):active {
+  transform: translateY(1px);
 }
 
 /* LOGIN */
@@ -102,8 +109,8 @@ textarea {
   margin-top: 7px;
   min-height: 48px;
   padding: 12px 13px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  border: 1px solid #ded3cb;
+  border-radius: 8px;
   background-color: var(--surface);
   color: var(--ink);
   outline: none;
@@ -142,8 +149,8 @@ select::-ms-expand {
   width: 100%;
   min-height: 48px;
   padding: 12px 42px 12px 13px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  border: 1px solid #ded3cb;
+  border-radius: 8px;
   background: var(--surface);
   color: var(--ink);
   font: inherit;
@@ -182,7 +189,7 @@ select::-ms-expand {
 .customSelectButton:focus-visible,
 .datePickerButton:focus-visible {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(47, 93, 80, 0.13);
+  box-shadow: 0 0 0 4px rgba(122, 36, 28, 0.12);
   outline: none;
 }
 
@@ -230,7 +237,7 @@ select::-ms-expand {
 
 .customSelectOption:hover,
 .customSelectOption.active {
-  background: #edf5f1;
+  background: #fbf0ea;
   color: var(--accent-dark);
 }
 
@@ -286,11 +293,11 @@ select::-ms-expand {
 }
 
 .datePickerGrid button:hover {
-  background: #e6f0eb;
+  background: #f8f1ed;
 }
 
 .datePickerGrid button.today {
-  border: 1px solid #a9b9b1;
+  border: 1px solid #d8b8ad;
 }
 
 .datePickerGrid button.selected {
@@ -314,7 +321,7 @@ input:focus,
 select:focus,
 textarea:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(47, 93, 80, 0.13);
+  box-shadow: 0 0 0 4px rgba(122, 36, 28, 0.12);
 }
 
 input::placeholder,
@@ -351,11 +358,26 @@ textarea {
   background: var(--accent-dark);
 }
 
+.primaryButton:hover,
+.smallButton:hover,
+.downloadBar button:hover,
+.previewDownloadBar button:hover {
+  background: #672018;
+  box-shadow: 0 10px 22px rgba(79, 23, 18, 0.16);
+}
+
 .outlineButton {
   padding: 10px 14px;
   color: var(--accent-dark);
   background: var(--surface);
   border: 1px solid var(--line);
+}
+
+.outlineButton:hover,
+.downloadBar .previewActionButton:hover,
+.previewDownloadBar .previewActionButton:hover {
+  border-color: #b8c7c1;
+  background: #f8f1ed;
 }
 
 .outlineButton.full {
@@ -391,24 +413,21 @@ textarea {
   min-height: 100vh;
   padding: 24px;
   padding-bottom: 96px;
-  background:
-    radial-gradient(circle at top left, rgba(47, 93, 80, 0.12), transparent 340px),
-    var(--page);
+  background: var(--page);
 }
 
 .appHeader {
   max-width: 1440px;
-  margin: 0 auto 24px;
+  margin: 0 auto 18px;
   padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 14px;
   align-items: center;
-  border: 1px solid rgba(222, 216, 208, 0.8);
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #e1d7cf;
+  border-radius: 12px;
+  background: #ffffff;
   box-shadow: var(--shadow);
-  backdrop-filter: blur(12px);
 }
 
 .appBrand {
@@ -418,20 +437,60 @@ textarea {
 }
 
 .appBrand img {
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
 }
 
 .appBrand h1 {
   margin: 0;
-  font-size: 21px;
+  font-size: 18px;
+  line-height: 1.15;
+  letter-spacing: 0;
 }
 
 .appBrand p {
   margin: 4px 0 0;
   color: var(--muted);
   font-size: 13px;
+}
+
+.headerSummary {
+  min-width: 190px;
+  padding: 10px 12px;
+  display: grid;
+  justify-items: end;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-raised);
+}
+
+.headerSummary strong {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--accent-dark);
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 9px;
+  border: 1px solid #e4c7ba;
+  border-radius: 999px;
+  background: #fff4ed;
+  color: #8a3d26;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.statusPill.paid {
+  border-color: #d8b8ad;
+  background: #fbf0ea;
+  color: var(--accent-dark);
 }
 
 .headerActions {
@@ -455,14 +514,14 @@ textarea {
   max-width: 1440px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(420px, 520px) minmax(0, 1fr);
-  gap: 24px;
+  grid-template-columns: minmax(430px, 540px) minmax(0, 1fr);
+  gap: 22px;
   align-items: start;
 }
 
 .editor {
   display: grid;
-  gap: 16px;
+  gap: 14px;
 }
 
 .mobileTotalBar {
@@ -471,17 +530,26 @@ textarea {
 
 .summaryPanel {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 8px;
 }
 
-.summaryPanel > div {
+.summaryCard {
   min-width: 0;
-  padding: 14px;
-  border: 1px solid rgba(222, 216, 208, 0.92);
-  border-radius: 14px;
+  padding: 13px 14px;
+  border: 1px solid #e1d7cf;
+  border-radius: 10px;
   background: var(--surface);
-  box-shadow: 0 8px 20px rgba(33, 28, 24, 0.05);
+  box-shadow: none;
+}
+
+.summaryTotal {
+  grid-row: span 3;
+  display: grid;
+  align-content: center;
+  background: #4f1712;
+  border-color: #4f1712;
+  color: #ffffff;
 }
 
 .summaryPanel span {
@@ -505,12 +573,24 @@ textarea {
   white-space: nowrap;
 }
 
+.summaryTotal span {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.summaryTotal strong {
+  color: #ffffff;
+  font-size: 25px;
+  line-height: 1.05;
+}
+
 .summaryPanel .paidText {
   color: var(--accent);
 }
 
 .preview {
   min-width: 0;
+  position: sticky;
+  top: 18px;
 }
 
 .previewPaperWrap {
@@ -518,10 +598,10 @@ textarea {
 }
 
 .previewTop {
-  margin-bottom: 16px;
-  padding: 16px 18px;
-  border: 1px solid rgba(222, 216, 208, 0.9);
-  border-radius: 16px;
+  margin-bottom: 12px;
+  padding: 14px 16px;
+  border: 1px solid #e1d7cf;
+  border-radius: 12px;
   background: var(--surface);
   display: flex;
   align-items: center;
@@ -530,11 +610,23 @@ textarea {
 }
 
 .previewTop h2 {
-  margin: 0;
+  margin: 0 0 4px;
   font-size: 18px;
 }
 
-.previewTop strong {
+.previewTop span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.previewTopTotal {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+}
+
+.previewTopTotal strong {
   font-size: 20px;
   color: var(--accent-dark);
 }
@@ -546,17 +638,26 @@ textarea {
 /* EDITOR */
 
 .card {
-  padding: 18px;
-  border: 1px solid rgba(222, 216, 208, 0.92);
-  border-radius: 16px;
+  padding: 18px 18px 16px;
+  border: 1px solid #e1d7cf;
+  border-radius: 12px;
   background: var(--surface);
-  box-shadow: 0 10px 24px rgba(33, 28, 24, 0.06);
+  box-shadow: none;
 }
 
 .card h2 {
-  margin: 0 0 16px;
-  font-size: 17px;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #edf0ec;
+  font-size: 15px;
+  font-weight: 900;
   color: var(--ink);
+  text-transform: uppercase;
+}
+
+.card:focus-within {
+  border-color: #b8c7c1;
+  box-shadow: 0 12px 30px rgba(38, 25, 20, 0.08), 0 0 0 4px rgba(122, 36, 28, 0.08);
 }
 
 .cardTitleRow {
@@ -590,9 +691,9 @@ textarea {
 
 .itemBox {
   padding: 16px;
-  border: 1px solid rgba(222, 216, 208, 0.95);
-  border-radius: 14px;
-  background: var(--surface-soft);
+  border: 1px solid #e1d7cf;
+  border-radius: 10px;
+  background: var(--surface-raised);
 }
 
 .itemTop {
@@ -627,9 +728,9 @@ textarea {
   place-items: center;
   min-height: 90px;
   padding: 14px;
-  border: 1px dashed #a9b9b1;
+  border: 1px dashed #c9a99b;
   border-radius: 14px;
-  background: #f5faf7;
+  background: #fbf7f3;
   color: var(--accent-dark);
   font-weight: 800;
   cursor: pointer;
@@ -639,7 +740,7 @@ textarea {
 
 .uploadBox:hover {
   border-color: var(--accent);
-  background: #eef7f2;
+  background: #fbf0ea;
 }
 
 .uploadBox input {
@@ -652,19 +753,20 @@ textarea {
   position: sticky;
   bottom: max(16px, env(safe-area-inset-bottom));
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   padding: 10px;
   border: 1px solid rgba(222, 216, 208, 0.9);
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 18px 42px rgba(33, 28, 24, 0.14);
+  box-shadow: var(--shadow-strong);
   backdrop-filter: blur(12px);
   z-index: 20;
 }
 
 .downloadBar button {
-  padding: 12px 10px;
+  min-width: 0;
+  padding: 13px 12px;
   color: #ffffff;
   background: var(--accent-dark);
 }
@@ -690,6 +792,7 @@ textarea {
   bottom: calc(100% + 10px);
   left: 0;
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   padding: 10px;
   border: 1px solid rgba(222, 216, 208, 0.95);
@@ -702,7 +805,7 @@ textarea {
 
 .downloadBar .downloadChoice,
 .previewDownloadBar .downloadChoice {
-  min-height: 54px;
+  min-height: 58px;
   padding: 10px 12px;
   display: flex;
   align-items: center;
@@ -710,17 +813,17 @@ textarea {
   gap: 12px;
   border: 1px solid transparent;
   border-radius: 12px;
-  background: #f7f9f6;
+  background: #fbfaf8;
   color: var(--ink);
   text-align: left;
 }
 
 .downloadBar .downloadChoice:hover,
 .downloadBar .downloadChoice.recommended,
-.previewDownloadBar .downloadChoice:hover,
+  .previewDownloadBar .downloadChoice:hover,
 .previewDownloadBar .downloadChoice.recommended {
-  border-color: #bfd1c8;
-  background: #edf5f1;
+  border-color: #d8b8ad;
+  background: #fbf0ea;
 }
 
 .downloadChoice span {
@@ -774,9 +877,9 @@ textarea {
   width: 100%;
   min-height: 76px;
   padding: 14px 16px;
-  border: 1px dashed #9eb4aa;
+  border: 1px dashed #c9a99b;
   border-radius: 14px;
-  background: #f4faf6;
+  background: #fbf7f3;
   color: var(--accent-dark);
   display: grid;
   place-items: center;
@@ -788,7 +891,7 @@ textarea {
 .qrUploadButton:hover,
 .qrUploadButton.hasFile {
   border-color: var(--accent);
-  background: #edf7f1;
+  background: #fbf0ea;
 }
 
 .qrUploadButton span {
@@ -811,11 +914,20 @@ textarea {
   max-width: 850px;
   min-height: 1120px;
   margin: 0 auto;
-  padding: 48px;
+  padding: 54px 56px 48px;
   background: #ffffff;
-  color: #241814;
-  border: 1px solid #eadfd7;
-  box-shadow: 0 24px 70px rgba(50, 31, 23, 0.12);
+  color: #151716;
+  border: 1px solid #e1d7cf;
+  border-radius: 2px;
+  box-shadow: 0 24px 64px rgba(21, 23, 22, 0.12);
+}
+
+.professionalInvoice::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 7px;
+  background: #4f1712;
 }
 
 /* INVOICE HEADER */
@@ -825,8 +937,8 @@ textarea {
   align-items: flex-start;
   justify-content: space-between;
   gap: 32px;
-  padding-bottom: 30px;
-  border-bottom: 2px solid #241814;
+  padding-bottom: 26px;
+  border-bottom: 1px solid #e1d7cf;
 }
 
 .proBrand {
@@ -836,8 +948,8 @@ textarea {
 }
 
 .proBrand img {
-  width: 76px;
-  height: 76px;
+  width: 70px;
+  height: 70px;
   object-fit: contain;
   padding: 0;
   border: none;
@@ -847,7 +959,7 @@ textarea {
 
 .proBrand h1 {
   margin: 0 0 8px;
-  font-size: 26px;
+  font-size: 25px;
   line-height: 1;
 }
 
@@ -870,9 +982,10 @@ textarea {
 
 .proInvoiceTitle h2 {
   margin: 0;
-  font-size: 42px;
+  font-size: 46px;
   line-height: 1;
-  letter-spacing: -1.5px;
+  letter-spacing: 1px;
+  color: #4f1712;
 }
 
 /* INFO BAR */
@@ -880,11 +993,12 @@ textarea {
 .proInfoBar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
   margin: 28px 0;
-  border: 1px solid #eadfd7;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #fffaf6;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+  background: transparent;
 }
 
 .proInfoBarThree {
@@ -892,12 +1006,10 @@ textarea {
 }
 
 .proInfoBar div {
-  padding: 16px;
-  border-right: 1px solid #eadfd7;
-}
-
-.proInfoBar div:last-child {
-  border-right: none;
+  padding: 14px 15px;
+  border: 1px solid #e1d7cf;
+  border-radius: 10px;
+  background: #faf8f5;
 }
 
 .proInfoBar span,
@@ -907,13 +1019,14 @@ textarea {
   margin-bottom: 7px;
   font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1.2px;
-  color: #9b857a;
+  letter-spacing: 0.8px;
+  color: #68736d;
   text-transform: uppercase;
 }
 
 .proInfoBar strong {
   font-size: 14px;
+  color: #151716;
 }
 
 /* CUSTOMER */
@@ -921,16 +1034,16 @@ textarea {
 .proCustomerSection {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
-  gap: 18px;
-  margin-bottom: 28px;
+  gap: 16px;
+  margin-bottom: 30px;
 }
 
 .proCustomerBox,
 .proNoteBox {
   min-height: 140px;
-  padding: 22px;
-  border: 1px solid #eadfd7;
-  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #e1d7cf;
+  border-radius: 10px;
   background: #ffffff;
 }
 
@@ -951,31 +1064,63 @@ textarea {
 
 .proInvoiceTable {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin-top: 8px;
+  overflow: hidden;
+  border: 1px solid #e1d7cf;
+  border-radius: 10px;
 }
 
 .proInvoiceTable thead th {
-  padding: 14px 12px;
+  padding: 11px 10px;
   font-size: 10px;
   font-weight: 900;
-  letter-spacing: 1px;
-  color: #6c554b;
-  background: #f7efe8;
-  border-bottom: 1px solid #eadfd7;
+  letter-spacing: 0.8px;
+  color: #ffffff;
+  background: #4f1712;
+  border-bottom: 0;
   text-transform: uppercase;
 }
 
-.proInvoiceTable tbody td {
-  padding: 16px 12px;
+.proInvoiceTable tbody td,
+.proInvoiceTable tfoot td {
+  padding: 12px 10px;
   font-size: 13px;
-  color: #2f211c;
-  border-bottom: 1px solid #f0e7df;
+  color: #1d211f;
+  border-bottom: 1px solid #edf0ec;
   vertical-align: top;
 }
 
+.proInvoiceTable tbody tr:nth-child(even) td {
+  background: #fbfaf8;
+}
+
 .proInvoiceTable tbody tr:last-child td {
-  border-bottom: 1px solid #241814;
+  border-bottom: 0;
+}
+
+.proInvoiceTable tfoot td {
+  border-top: 1px solid #d4c5bb;
+  border-bottom: 0;
+  background: #ffffff;
+  font-weight: 900;
+}
+
+.proInvoiceTable tfoot td:first-child {
+  width: auto;
+  text-align: right;
+}
+
+.proInvoiceTable tfoot tr:first-child td {
+  border-top-width: 2px;
+}
+
+.proInvoiceTable tfoot tr:last-child td {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  color: #4f1712;
+  font-size: 15px;
 }
 
 .proInvoiceTable th:first-child,
@@ -994,7 +1139,8 @@ textarea {
 .proInvoiceTable th:nth-child(5),
 .proInvoiceTable td:nth-child(5),
 .proInvoiceTable th:nth-child(6),
-.proInvoiceTable td:nth-child(6) {
+.proInvoiceTable td:nth-child(6),
+.proInvoiceTable tfoot td:last-child {
   text-align: right;
 }
 
@@ -1004,33 +1150,26 @@ textarea {
   color: #9b857a;
 }
 
-/* PAYMENT + SUMMARY */
-/* This matches latest InvoicePreview.jsx */
+/* PAYMENT */
 
 .ccInvoiceBottom {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 28px;
-  align-items: start;
-  margin-top: 34px;
-}
-
-.ccInvoiceBottomSummaryOnly {
-  grid-template-columns: 1fr;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 20px;
 }
 
 .ccPaymentCard {
-  width: 260px;
-  padding: 18px;
-  border: 1px solid #eadfd7;
-  border-radius: 18px;
-  background: #fffaf6;
+  width: 220px;
+  padding: 14px;
+  border: 1px solid #e1d7cf;
+  border-radius: 10px;
+  background: #ffffff;
   overflow: hidden;
 }
 
 .ccPaymentTitle {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1.2px;
@@ -1039,87 +1178,13 @@ textarea {
 }
 
 .ccPaymentImage {
-  width: 210px;
-  max-width: 210px;
+  width: 180px;
+  max-width: 180px;
   height: auto;
   display: block;
   object-fit: contain;
   margin: 0 auto;
   border-radius: 10px;
-}
-
-.ccSummaryCard {
-  width: 100%;
-  max-width: 390px;
-  margin-left: auto;
-  padding: 22px;
-  border: 1px solid #eadfd7;
-  border-radius: 18px;
-  background: #ffffff;
-}
-
-.ccInvoiceBottomSummaryOnly .ccSummaryCard {
-  margin-left: auto;
-}
-
-.ccSummaryRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0e7df;
-}
-
-.ccSummaryRow:first-child {
-  padding-top: 0;
-}
-
-.ccSummaryRow span {
-  font-size: 13px;
-  color: #6f5d53;
-}
-
-.ccSummaryRow strong {
-  font-size: 15px;
-  color: #241814;
-}
-
-.ccGrandTotalClean {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 18px;
-  margin-top: 16px;
-  padding-top: 18px;
-  border-top: 2px solid #241814;
-}
-
-.ccGrandTotalClean div {
-  display: grid;
-  gap: 4px;
-}
-
-.ccGrandTotalClean span {
-  font-size: 15px;
-  font-weight: 900;
-  color: #241814;
-}
-
-.ccGrandTotalClean small {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.1px;
-  text-transform: uppercase;
-  color: #9b857a;
-}
-
-.ccGrandTotalClean strong {
-  font-size: 26px;
-  font-weight: 950;
-  line-height: 1;
-  color: #241814;
-  letter-spacing: -0.8px;
 }
 
 /* OLD CLASS FALLBACK */
@@ -1236,9 +1301,9 @@ textarea {
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  margin-top: 46px;
-  padding-top: 22px;
-  border-top: 1px solid #eadfd7;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #e1d7cf;
 }
 
 .proInvoiceFooter p {
@@ -1322,12 +1387,12 @@ textarea {
 
 .paymentToggle:hover,
 .paymentToggle.active {
-  border-color: #97b5a8;
-  background: #f0f8f3;
+  border-color: #c9a99b;
+  background: #fbf0ea;
 }
 
 .paymentToggle.active {
-  box-shadow: 0 0 0 4px rgba(47, 93, 80, 0.1);
+  box-shadow: 0 0 0 4px rgba(122, 36, 28, 0.1);
 }
 
 .paymentToggle input {
@@ -1340,7 +1405,7 @@ textarea {
   width: 32px;
   height: 32px;
   flex: 0 0 32px;
-  border: 2px solid #b9c6bf;
+  border: 2px solid #cdb9ad;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -1416,6 +1481,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .preview {
+    position: static;
+  }
+
   .editor {
     order: 1;
   }
@@ -1440,8 +1509,10 @@ textarea {
     z-index: 30;
     margin: -10px -10px 12px;
     padding: 12px 10px;
+    grid-template-columns: 1fr;
     border-radius: 0;
-    box-shadow: 0 10px 28px rgba(33, 28, 24, 0.08);
+    border-bottom: 1px solid #e1d7cf;
+    box-shadow: 0 8px 18px rgba(21, 23, 22, 0.06);
   }
 
   .appHeader,
@@ -1456,6 +1527,14 @@ textarea {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr;
+  }
+
+  .headerSummary {
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .headerActions select {
@@ -1529,14 +1608,15 @@ textarea {
     grid-template-columns: 1fr 1fr;
   }
 
-  .summaryPanel > div:last-child {
+  .summaryTotal {
     grid-column: 1 / -1;
+    grid-row: auto;
   }
 
   .card,
   .advancedPanel {
-    border-radius: 14px;
-    box-shadow: 0 8px 20px rgba(33, 28, 24, 0.06);
+    border-radius: 12px;
+    box-shadow: none;
   }
 
   .card {
@@ -1596,6 +1676,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .downloadChoicePanel {
+    grid-template-columns: 1fr;
+  }
+
   .dashboardDownloadButton,
   .desktopOnlyLabel {
     display: none;
@@ -1615,6 +1699,7 @@ textarea {
   }
 
   .preview {
+    position: static;
     overflow: hidden;
   }
 
@@ -1623,7 +1708,7 @@ textarea {
     inset: 0;
     z-index: 70;
     display: block;
-    padding: 10px 10px calc(18px + env(safe-area-inset-bottom));
+    padding: 10px 10px calc(92px + env(safe-area-inset-bottom));
     overflow: auto;
     background: var(--page);
   }
@@ -1664,24 +1749,28 @@ textarea {
   }
 
   .preview.mobilePreviewOpen .previewDownloadBar {
-    position: sticky;
-    top: 82px;
-    z-index: 3;
+    position: fixed;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 10px;
+    z-index: 80;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(88px, 0.7fr) minmax(0, 1.3fr);
     gap: 8px;
-    margin-bottom: 10px;
     padding: 10px;
     border: 1px solid var(--line);
     border-radius: 16px;
-    background: rgba(255, 255, 255, 0.94);
-    box-shadow: 0 14px 32px rgba(33, 28, 24, 0.12);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 -14px 34px rgba(33, 28, 24, 0.16);
     backdrop-filter: blur(12px);
   }
 
   .previewDownloadBar button {
-    min-height: 44px;
-    padding: 10px 12px;
+    min-height: 52px;
+    padding: 12px 14px;
+    border-radius: 13px;
+    font-size: 15px;
+    font-weight: 900;
     color: #ffffff;
     background: var(--accent-dark);
   }
@@ -1693,8 +1782,9 @@ textarea {
   }
 
   .previewDownloadChoicePanel {
-    top: calc(100% + 8px);
-    bottom: auto;
+    top: auto;
+    bottom: calc(100% + 8px);
+    border-radius: 14px;
   }
 
   .previewTop h2 {
@@ -1735,49 +1825,145 @@ textarea {
     width: 100%;
     max-width: 850px;
     min-height: auto;
-    padding: 24px 16px;
+    padding: 24px 14px 22px;
     transform: none;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(21, 23, 22, 0.1);
   }
 
   .preview.mobilePreviewOpen .proInvoiceHeader {
-    gap: 16px;
-    padding-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding-bottom: 16px;
+  }
+
+  .preview.mobilePreviewOpen .proBrand {
+    min-width: 0;
+    gap: 12px;
+    align-items: center;
   }
 
   .preview.mobilePreviewOpen .proBrand img {
-    width: 58px;
-    height: 58px;
+    width: 48px;
+    height: 48px;
   }
 
   .preview.mobilePreviewOpen .proBrand h1 {
-    font-size: 21px;
+    margin-bottom: 4px;
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  .preview.mobilePreviewOpen .proBrand p {
+    display: none;
+  }
+
+  .preview.mobilePreviewOpen .proBrand span {
+    font-size: 11px;
   }
 
   .preview.mobilePreviewOpen .proInvoiceTitle h2 {
-    font-size: 32px;
+    font-size: 22px;
+    letter-spacing: 0;
   }
 
   .preview.mobilePreviewOpen .proInfoBar,
   .preview.mobilePreviewOpen .proCustomerSection,
   .preview.mobilePreviewOpen .ccInvoiceBottom {
-    margin-top: 18px;
-    margin-bottom: 18px;
+    margin-top: 14px;
+    margin-bottom: 14px;
+  }
+
+  .preview.mobilePreviewOpen .proInfoBar,
+  .preview.mobilePreviewOpen .proInfoBarThree {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .preview.mobilePreviewOpen .proInfoBar div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border: 1px solid #e1d7cf;
+    border-radius: 10px;
+  }
+
+  .preview.mobilePreviewOpen .proInfoBar span,
+  .preview.mobilePreviewOpen .proCustomerBox span,
+  .preview.mobilePreviewOpen .proNoteBox span,
+  .preview.mobilePreviewOpen .ccPaymentTitle {
+    margin-bottom: 0;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+  }
+
+  .preview.mobilePreviewOpen .proInfoBar strong {
+    text-align: right;
+  }
+
+  .preview.mobilePreviewOpen .proCustomerSection,
+  .preview.mobilePreviewOpen .ccInvoiceBottom,
+  .preview.mobilePreviewOpen .ccInvoiceBottomSummaryOnly {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .preview.mobilePreviewOpen .proCustomerBox,
   .preview.mobilePreviewOpen .proNoteBox,
   .preview.mobilePreviewOpen .ccSummaryCard {
-    padding: 16px;
+    min-height: auto;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .preview.mobilePreviewOpen .proCustomerBox h3 {
+    margin: 6px 0 8px;
+    font-size: 18px;
   }
 
   .preview.mobilePreviewOpen .proInvoiceTable {
+    display: table;
     table-layout: fixed;
+    width: 100%;
+    margin-top: 14px;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable thead {
+    display: table-header-group;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody {
+    display: table-row-group;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tr {
+    display: table-row;
   }
 
   .preview.mobilePreviewOpen .proInvoiceTable th,
   .preview.mobilePreviewOpen .proInvoiceTable td {
-    padding: 10px 5px;
-    font-size: 11px;
+    display: table-cell;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody tr {
+    background: #ffffff;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody tr + tr {
+    margin-top: 0;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable th,
+  .preview.mobilePreviewOpen .proInvoiceTable tbody td {
+    padding: 8px 5px;
+    border-bottom: 1px solid #eee6df;
+    font-size: 10px;
+    line-height: 1.35;
     word-break: break-word;
   }
 
@@ -1786,9 +1972,43 @@ textarea {
     letter-spacing: 0;
   }
 
-  .preview.mobilePreviewOpen .proInvoiceTable th:first-child,
-  .preview.mobilePreviewOpen .proInvoiceTable td:first-child {
-    width: 28px;
+  .preview.mobilePreviewOpen .proInvoiceTable tbody td:first-child {
+    width: 26px;
+    color: #6f5d53;
+    font-size: 10px;
+    text-align: center;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody td:nth-child(2) {
+    text-align: left;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody td:nth-child(n + 3) {
+    color: #6f5d53;
+    text-align: right;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody td:nth-child(n + 3)::before {
+    content: none;
+  }
+
+  .preview.mobilePreviewOpen .proInvoiceTable tbody td:nth-child(6) {
+    color: #241814;
+  }
+
+  .preview.mobilePreviewOpen .ccPaymentCard,
+  .preview.mobilePreviewOpen .ccSummaryCard {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .preview.mobilePreviewOpen .ccGrandTotalClean {
+    align-items: center;
+  }
+
+  .preview.mobilePreviewOpen .ccGrandTotalClean strong {
+    font-size: 24px;
   }
 
   .invoicePaper.exportMode,

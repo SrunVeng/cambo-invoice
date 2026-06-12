@@ -29,6 +29,7 @@ export default function Dashboard({
     const previewSectionRef = useRef(null);
     const qrInputRef = useRef(null);
     const downloadMenuRef = useRef(null);
+    const previewDownloadMenuRef = useRef(null);
     const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
     const [isMobilePreviewOpen, setIsMobilePreviewOpen] = useState(false);
     const currentPreviewToken = useMemo(
@@ -68,7 +69,10 @@ export default function Dashboard({
 
     useEffect(() => {
         function closeDownloadMenu(event) {
-            if (!downloadMenuRef.current?.contains(event.target)) {
+            const clickedDashboardMenu = downloadMenuRef.current?.contains(event.target);
+            const clickedPreviewMenu = previewDownloadMenuRef.current?.contains(event.target);
+
+            if (!clickedDashboardMenu && !clickedPreviewMenu) {
                 setIsDownloadMenuOpen(false);
             }
         }
@@ -269,6 +273,13 @@ export default function Dashboard({
                     </div>
                 </div>
 
+                <div className="headerSummary" aria-label={t.grandTotal}>
+                    <span className={isPaid ? "statusPill paid" : "statusPill"}>
+                        {statusText}
+                    </span>
+                    <strong>{formatMoney(totals.grandTotal, currency)}</strong>
+                </div>
+
                 <div className="headerActions">
                     <CustomSelect
                         value={lang}
@@ -294,17 +305,22 @@ export default function Dashboard({
                     </div>
 
                     <div className="summaryPanel">
-                        <div>
+                        <div className="summaryCard summaryTotal">
+                            <span>{t.grandTotal}</span>
+                            <strong>{formatMoney(totals.grandTotal, currency)}</strong>
+                        </div>
+
+                        <div className="summaryCard">
                             <span>{t.subtotal}</span>
                             <strong>{formatMoney(totals.subtotal, currency)}</strong>
                         </div>
 
-                        <div>
+                        <div className="summaryCard">
                             <span>{t.totalDiscount}</span>
                             <strong>{formatMoney(totals.totalDiscount, currency)}</strong>
                         </div>
 
-                        <div>
+                        <div className="summaryCard">
                             <span>{t.status}</span>
                             <strong className={isPaid ? "paidText" : ""}>
                                 {statusText}
@@ -661,11 +677,18 @@ export default function Dashboard({
                     ref={previewSectionRef}
                 >
                     <div className="previewTop">
-                        <h2>{t.preview}</h2>
-                        <strong>{formatMoney(totals.grandTotal, currency)}</strong>
+                        <div>
+                            <h2>{t.preview}</h2>
+                            <span>{invoice.invoiceNo}</span>
+                        </div>
+
+                        <div className="previewTopTotal">
+                            <span>{t.grandTotal}</span>
+                            <strong>{formatMoney(totals.grandTotal, currency)}</strong>
+                        </div>
                     </div>
 
-                    <div className="previewDownloadBar">
+                    <div className="previewDownloadBar" ref={previewDownloadMenuRef}>
                         <button
                             type="button"
                             className="previewActionButton"

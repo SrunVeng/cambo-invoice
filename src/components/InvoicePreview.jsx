@@ -113,52 +113,40 @@ export default function InvoicePreview({
                                 {item.unit && <small>{item.unit}</small>}
                             </td>
 
-                            <td>{item.qty || 0}</td>
-                            <td>{formatMoney(item.price, currency)}</td>
-                            <td>{getDiscountText(item, calculated)}</td>
+                            <td data-label={t.qty}>{item.qty || 0}</td>
+                            <td data-label={t.unitPrice}>{formatMoney(item.price, currency)}</td>
+                            <td data-label={t.discount}>{getDiscountText(item, calculated)}</td>
 
-                            <td>
+                            <td data-label={t.total}>
                                 <strong>{formatMoney(calculated.net, currency)}</strong>
                             </td>
                         </tr>
                     );
                 })}
                 </tbody>
+
+                <tfoot>
+                {hasDiscount && (
+                    <tr>
+                        <td colSpan="5">{t.totalDiscount}</td>
+                        <td>{formatMoney(totals.totalDiscount, currency)}</td>
+                    </tr>
+                )}
+
+                <tr>
+                    <td colSpan="5">{t.total}</td>
+                    <td>{formatMoney(totals.grandTotal, currency)}</td>
+                </tr>
+                </tfoot>
             </table>
 
-            <section
-                className={`ccInvoiceBottom${
-                    showPaymentQr ? "" : " ccInvoiceBottomSummaryOnly"
-                }`}
-            >
+            <section className="ccInvoiceBottom">
                 {showPaymentQr && (
                     <div className="ccPaymentCard">
                         <span className="ccPaymentTitle">{t.paymentQr}</span>
                         <img className="ccPaymentImage" src={qrImage} alt="Payment QR" />
                     </div>
                 )}
-
-                <div className="ccSummaryCard">
-                    <div className="ccSummaryRow">
-                        <span>{t.subtotal}</span>
-                        <strong>{formatMoney(totals.subtotal, currency)}</strong>
-                    </div>
-
-                    {hasDiscount && (
-                        <div className="ccSummaryRow">
-                            <span>{t.totalDiscount}</span>
-                            <strong>{formatMoney(totals.totalDiscount, currency)}</strong>
-                        </div>
-                    )}
-
-                    <div className="ccGrandTotalClean">
-                        <div>
-                            <span>{t.grandTotal}</span>
-                        </div>
-
-                        <strong>{formatMoney(totals.grandTotal, currency)}</strong>
-                    </div>
-                </div>
             </section>
 
             <footer className="proInvoiceFooter">

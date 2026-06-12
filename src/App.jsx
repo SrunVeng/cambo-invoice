@@ -85,7 +85,7 @@ const text = {
     previewInvoice: "Preview invoice",
     reviewInvoice: "Review",
     closePreview: "Close preview",
-    editInvoice: "Back to edit",
+    editInvoice: "Edit",
     stampExisting: "Update existing invoice as paid",
     updatePaidInvoiceHelp: "Upload a PDF, PNG, or JPG invoice and download a copy marked PAID.",
     website: "www.coffeecambodia.com",
@@ -156,7 +156,7 @@ const text = {
     previewInvoice: "មើលវិក្កយបត្រ",
     reviewInvoice: "ពិនិត្យមើល",
     closePreview: "បិទការមើល",
-    editInvoice: "ត្រឡប់ទៅកែ",
+    editInvoice: "កែ",
     stampExisting: "ធ្វើបច្ចុប្បន្នភាពវិក្កយបត្រថាបានបង់",
     updatePaidInvoiceHelp: "បញ្ចូលវិក្កយបត្រ PDF, PNG ឬ JPG ហើយទាញយកច្បាប់ចម្លងដែលមានសញ្ញា PAID។",
     website: "www.coffeecambodia.com",
@@ -194,7 +194,7 @@ function blankInvoice() {
 }
 
 export default function App() {
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState("kh");
   const [invoice, setInvoice] = useState(blankInvoice);
   const [qrImage, setQrImage] = useState("");
   const [isExporting, setIsExporting] = useState(false);
